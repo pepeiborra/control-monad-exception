@@ -16,6 +16,18 @@ import qualified Control.Exception
 import Data.Monoid
 import Prelude hiding (catch)
 
+{-| @Throws@ is the mechanism used to keep a type level
+    list of exceptions.
+    .
+    Usually there is no need for the user of this library
+    to add further instances to @Throws@ except in one
+    case: to encode subtyping. For instance if we have
+    an @IOException@ type and a @FIleNotFoundException@ subcase,
+    we need to add the instance:
+
+ > instance Throws FileNotFoundException (Caught IOException l)
+
+-}
 class Exception e => Throws e s
 
 class Monad m => MonadThrow e m where
@@ -30,10 +42,14 @@ class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
 instance Exception e => MonadCatch e IO IO where
    catch = Control.Exception.catch
 
+-- | A type level witness of a exception handler.
 data Caught e l
 
 instance Exception e => Throws e (Caught e l)
 instance Throws e l => Throws e (Caught e1 l)
+-- | @SomeException@ is at the top of the exception hierarchy
+--   .
+--   Capturing SomeException captures every possible exception
 instance Exception e => Throws e (Caught SomeException l)
 
 -- Throw and Catch instances for the Either and ErrorT monads
