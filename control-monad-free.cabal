@@ -1,0 +1,51 @@
+name: control-monad-exception
+version: 0.1
+Cabal-Version:  >= 1.2.3
+build-type: Simple
+license: PublicDomain
+author: Pepe Iborra
+maintainer: pepeiborra@gmail.com
+homepage: http://github.com/pepeiborra/control-monad-exception
+description: 
+  This package provides explicitly typed exceptions as a library.
+  .
+  /Example/
+  .
+  > data Expr = Add Expr Expr | Div Expr Expr | Val Double
+  > eval (Val x)     = return x
+  > eval (Add a1 a2) = do
+  >    v1 <- eval a1
+  >    v2 <- eval a2
+  >    let sum = v1 + v2
+  >    if sum < v1 || sum < v2 then throw SumOverflow else return sum
+  > eval (Div a1 a2) = do
+  >    v1 <- eval a1
+  >    v2 <- eval a2
+  >    if v2 == 0 then throw DivideByZero else return (v1 / v2)
+  .
+  > data DivideByZero = DivideByZero deriving (Show, Typeable)
+  > data SumOverflow  = SumOverflow  deriving (Show, Typeable)
+  .
+  > instance Exception DivideByZero
+  > instance Exception SumOverflow
+  .
+  GHCi infers the following types
+  .
+  > eval :: (Throws DivideByZero l, Throws SumOverflow l) => Expr -> EM l Double
+  > eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
+synopsis: Explicitly typed exceptions
+category: Control, Monads
+stability: experimental
+
+
+Library
+  buildable: True
+  build-depends: base >= 4.0
+  extensions:  MultiParamTypeClasses, 
+               OverlappingInstances, 
+               FlexibleInstances,
+               FunctionalDependencies,
+               EmptyDataDecls
+  exposed-modules:
+     Control.Monad.Exception.Class
+     Control.Monad.Exception
