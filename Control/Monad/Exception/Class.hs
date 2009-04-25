@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Control.Monad.Exception.Class (
        module Control.Monad,
        module Control.Monad.Exception.Class,

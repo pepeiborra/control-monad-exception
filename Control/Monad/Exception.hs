@@ -1,4 +1,4 @@
-{-# LANGUAGE UndecidableInstances #-}
+
 module Control.Monad.Exception (
     module Control.Monad.Exception,
     module Control.Monad.Exception.Class ) where
