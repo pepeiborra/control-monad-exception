@@ -40,12 +40,14 @@ stability: experimental
 
 Library
   buildable: True
-  build-depends: base >= 4.0
+  build-depends: base >= 4.0, transformers
   extensions:  MultiParamTypeClasses, 
+               FunctionalDependencies,
                OverlappingInstances, 
                FlexibleInstances,
-               FunctionalDependencies,
-               EmptyDataDecls
+               EmptyDataDecls,
+               DeriveDataTypeable,
+               UndecidableInstances
   exposed-modules:
      Control.Monad.Exception.Class
      Control.Monad.Exception
