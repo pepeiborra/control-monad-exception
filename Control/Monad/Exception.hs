@@ -17,6 +17,11 @@ import Prelude hiding (catch)
 
 newtype EM l a = EM {runEM::Either SomeException a}
 
+-- | Run a safe computation
+evalEM :: EM l a -> a
+evalEM (EM (Right a)) = a
+evalEM _ = error "evalEM : The impossible happened"
+
 instance Functor (EM l) where
     fmap f (EM (Left e))  = EM (Left e)
     fmap f (EM (Right x)) = EM (Right (f x))
@@ -45,6 +50,11 @@ instance Throws MonadZero l => MonadPlus (EM l) where
   mplus p1@(EM Right{}) p2 = p1
 
 newtype EMT l m a = EMT {runEMT :: m (Either SomeException a)}
+
+evalEMT :: Monad m => EMT l m a -> m a
+evalEMT (EMT m) = liftM f m where
+  f (Right x) = x
+  f (Left  x) = error "evalEMT: The impossible happened"
 
 instance Monad m => Functor (EMT l m) where
   fmap f emt = EMT $ do
