@@ -40,7 +40,7 @@ stability: experimental
 
 Library
   buildable: True
-  build-depends: base >= 4.0, transformers
+  build-depends: base >= 4.0, transformers, monads-fd
   extensions:  MultiParamTypeClasses, 
                FunctionalDependencies,
                OverlappingInstances, 
