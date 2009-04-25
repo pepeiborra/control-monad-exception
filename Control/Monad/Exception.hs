@@ -15,12 +15,16 @@ import Data.Monoid
 import Data.Typeable
 import Prelude hiding (catch)
 
-newtype EM l a = EM {runEM::Either SomeException a}
+newtype EM l a = EM {unEM::Either SomeException a}
+
+-- | Run a computation which may fail
+evalEM :: EM (Caught SomeException l) a -> Either SomeException a
+evalEM (EM a) = a
 
 -- | Run a safe computation
-evalEM :: EM l a -> a
-evalEM (EM (Right a)) = a
-evalEM _ = error "evalEM : The impossible happened"
+runEM :: EM l a -> a
+runEM (EM (Right a)) = a
+runEM _ = error "evalEM : The impossible happened"
 
 instance Functor (EM l) where
     fmap f (EM (Left e))  = EM (Left e)
@@ -49,16 +53,19 @@ instance Throws MonadZero l => MonadPlus (EM l) where
   mplus (EM (Left _))   p2 = p2
   mplus p1@(EM Right{}) p2 = p1
 
-newtype EMT l m a = EMT {runEMT :: m (Either SomeException a)}
+newtype EMT l m a = EMT {unEMT :: m (Either SomeException a)}
 
-evalEMT :: Monad m => EMT l m a -> m a
-evalEMT (EMT m) = liftM f m where
+evalEMT :: Monad m => EMT (Caught SomeException l) m a -> m (Either SomeException a)
+evalEMT (EMT m) = m
+
+runEMT :: Monad m => EMT l m a -> m a
+runEMT (EMT m) = liftM f m where
   f (Right x) = x
   f (Left  x) = error "evalEMT: The impossible happened"
 
 instance Monad m => Functor (EMT l m) where
   fmap f emt = EMT $ do
-                 v <- runEMT emt
+                 v <- unEMT emt
                  case v of
                    Left  e -> return (Left e)
                    Right x -> return (Right (f x))
@@ -66,35 +73,35 @@ instance Monad m => Functor (EMT l m) where
 instance Monad m => Monad (EMT l m) where
   return = EMT . return . Right
   emt >>= f = EMT $ do
-                v <- runEMT emt
+                v <- unEMT emt
                 case v of
                   Left e  -> return (Left e)
-                  Right x -> runEMT (f x)
+                  Right x -> unEMT (f x)
 
 instance (Exception e, Throws e l, Monad m) => MonadThrow e (EMT l m) where
   throw = EMT . return . Left . toException
 instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
   catch emt h = EMT $ do
-                v <- runEMT emt
+                v <- unEMT emt
                 case v of
                   Right x -> return (Right x)
                   Left  e -> case fromException e of
                                Nothing -> return (Left e)
-                               Just e' -> runEMT (h e')
+                               Just e' -> unEMT (h e')
 
 
 instance (Monad m, Throws MonadZero l) => MonadPlus (EMT l m) where
   mzero = throw MonadZero
   mplus emt1 emt2 = EMT$ do
-                     v1 <- runEMT emt1
+                     v1 <- unEMT emt1
                      case v1 of
-                       Left _  -> runEMT emt2
+                       Left _  -> unEMT emt2
                        Right _ -> return v1
 
 instance MonadTrans (EMT l) where lift = EMT . liftM Right
 
 instance MonadFix m => MonadFix (EMT l m) where
-  mfix f = EMT $ mfix $ \a -> runEMT $ f $ case a of
+  mfix f = EMT $ mfix $ \a -> unEMT $ f $ case a of
                                              Right r -> r
                                              _       -> error "empty fix argument"
 
@@ -102,11 +109,11 @@ instance MonadIO m => MonadIO (EMT l m) where
   liftIO = lift . liftIO
 
 instance MonadCont m => MonadCont (EMT l m) where
-  callCC f = EMT $ callCC $ \c -> runEMT (f (\a -> EMT $ c (Right a)))
+  callCC f = EMT $ callCC $ \c -> unEMT (f (\a -> EMT $ c (Right a)))
 
 instance MonadReader r m => MonadReader r (EMT l m) where
   ask = lift ask
-  local f m = EMT (local f (runEMT m))
+  local f m = EMT (local f (unEMT m))
 
 instance MonadState s m => MonadState s (EMT l m) where
   get = lift get
@@ -115,10 +122,10 @@ instance MonadState s m => MonadState s (EMT l m) where
 instance (Monoid w, MonadWriter w m) => MonadWriter w (EMT l m) where
   tell   = lift . tell
   listen m = EMT $ do
-               (res, w) <- listen (runEMT m)
+               (res, w) <- listen (unEMT m)
                return (fmap (\x -> (x,w)) res)
   pass m   = EMT $ pass $ do
-               a <- runEMT m
+               a <- unEMT m
                case a of
                  Left  l     -> return (Left l, id)
                  Right (r,f) -> return (Right r, f)
