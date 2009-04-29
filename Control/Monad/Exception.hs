@@ -105,7 +105,7 @@ instance MonadFix m => MonadFix (EMT l m) where
                                              Right r -> r
                                              _       -> error "empty fix argument"
 
-instance MonadIO m => MonadIO (EMT l m) where
+instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
   liftIO = lift . liftIO
 
 instance MonadCont m => MonadCont (EMT l m) where
