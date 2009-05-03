@@ -50,13 +50,13 @@ instance Exception e => MonadCatch e (EM (Caught e l)) (EM l) where
                                           Nothing -> EM (Left (WrapException e))
                                           Just e' -> h e'
 
-data MonadZero = MonadZero deriving (Show, Typeable)
-instance Exception MonadZero
+data MonadZeroException = MonadZeroException deriving (Show, Typeable)
+instance Exception MonadZeroException
 
 
 -- Requires undecidable instances
-instance Throws MonadZero l => MonadPlus (EM l) where
-  mzero                    = throw MonadZero
+instance Throws MonadZeroException l => MonadPlus (EM l) where
+  mzero                    = throw MonadZeroException
   mplus (EM (Left _))   p2 = p2
   mplus p1@(EM Right{}) p2 = p1
 
@@ -97,8 +97,8 @@ instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) w
                                Just e' -> unEMT (h e')
 
 
-instance (Monad m, Throws MonadZero l) => MonadPlus (EMT l m) where
-  mzero = throw MonadZero
+instance (Monad m, Throws MonadZeroException l) => MonadPlus (EMT l m) where
+  mzero = throw MonadZeroException
   mplus emt1 emt2 = EMT$ do
                      v1 <- unEMT emt1
                      case v1 of
