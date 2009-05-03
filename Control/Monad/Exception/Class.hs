@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -7,7 +6,7 @@
 module Control.Monad.Exception.Class (
        module Control.Monad,
        MonadThrow(..), MonadCatch(..),
-       Throws(..), Caught(..),
+       Throws, Caught,
        WrapException(..), Exception(..), SomeException) where
 
 import Control.Monad
@@ -21,7 +20,6 @@ import Control.Monad.Trans.RWS
 import Control.Exception (Exception(..), SomeException)
 import qualified Control.Exception
 import Data.Monoid
-import Data.Typeable
 import Prelude hiding (catch)
 
 {-| @Throws@ is the mechanism used to keep a type level

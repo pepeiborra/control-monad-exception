@@ -12,9 +12,6 @@ import Control.Monad.Exception.Class
 import Control.Monad.Fix
 import Control.Monad.Trans
 import Control.Monad.Cont.Class
-import Control.Monad.Reader.Class
-import Control.Monad.State.Class
-import Control.Monad.Writer.Class
 import Control.Monad.RWS.Class
 import Data.Monoid
 import Data.Typeable
@@ -25,6 +22,7 @@ newtype EM l a = EM {unEM::Either (WrapException l) a}
 evalEM :: EM (Caught SomeException l) a -> Either SomeException a
 evalEM (EM a) = mapLeft wrapException a
 
+mapLeft :: (a -> b) -> Either a r -> Either b r
 mapLeft f (Left x)  = Left (f x)
 mapLeft _ (Right x) = Right x
 
@@ -34,7 +32,7 @@ runEM (EM (Right a)) = a
 runEM _ = error "evalEM : The impossible happened"
 
 instance Functor (EM l) where
-    fmap f (EM (Left e))  = EM (Left e)
+    fmap _ (EM (Left e))  = EM (Left e)
     fmap f (EM (Right x)) = EM (Right (f x))
 
 instance Monad (EM l) where
@@ -45,7 +43,7 @@ instance Monad (EM l) where
 instance (Exception e, Throws e l) => MonadThrow e (EM l) where
   throw = EM . Left . WrapException . toException
 instance Exception e => MonadCatch e (EM (Caught e l)) (EM l) where
-  catch (EM(Right x)) h = EM (Right x)
+  catch (EM(Right x)) _ = EM (Right x)
   catch (EM(Left  (WrapException e))) h = case fromException e of
                                           Nothing -> EM (Left (WrapException e))
                                           Just e' -> h e'
@@ -58,7 +56,7 @@ instance Exception MonadZeroException
 instance Throws MonadZeroException l => MonadPlus (EM l) where
   mzero                    = throw MonadZeroException
   mplus (EM (Left _))   p2 = p2
-  mplus p1@(EM Right{}) p2 = p1
+  mplus p1@(EM Right{}) _ = p1
 
 newtype EMT l m a = EMT {unEMT :: m (Either SomeException a)}
 
@@ -68,7 +66,7 @@ evalEMT (EMT m) = m
 runEMT :: Monad m => EMT l m a -> m a
 runEMT (EMT m) = liftM f m where
   f (Right x) = x
-  f (Left  x) = error "evalEMT: The impossible happened"
+  f (Left  _) = error "evalEMT: The impossible happened"
 
 instance Monad m => Functor (EMT l m) where
   fmap f emt = EMT $ do
