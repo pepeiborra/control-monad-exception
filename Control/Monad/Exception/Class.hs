@@ -1,3 +1,9 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE EmptyDataDecls #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleInstances #-}
 module Control.Monad.Exception.Class (
        module Control.Monad,
        MonadThrow(..), MonadCatch(..),

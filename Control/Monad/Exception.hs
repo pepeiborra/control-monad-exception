@@ -1,4 +1,7 @@
-
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Control.Monad.Exception (
     EM(..),  evalEM,  runEM,
     EMT(..), evalEMT, runEMT,
