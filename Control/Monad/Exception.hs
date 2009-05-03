@@ -15,11 +15,13 @@ import Data.Monoid
 import Data.Typeable
 import Prelude hiding (catch)
 
-newtype EM l a = EM {unEM::Either SomeException a}
-
+newtype EM l a = EM {unEM::Either (WrapException l) a}
 -- | Run a computation which may fail
 evalEM :: EM (Caught SomeException l) a -> Either SomeException a
-evalEM (EM a) = a
+evalEM (EM a) = mapLeft wrapException a
+
+mapLeft f (Left x)  = Left (f x)
+mapLeft _ (Right x) = Right x
 
 -- | Run a safe computation
 runEM :: EM l a -> a
@@ -36,12 +38,12 @@ instance Monad (EM l) where
   EM (Left e) >>= _ = EM (Left e)
 
 instance (Exception e, Throws e l) => MonadThrow e (EM l) where
-  throw = EM . Left . toException
+  throw = EM . Left . WrapException . toException
 instance Exception e => MonadCatch e (EM (Caught e l)) (EM l) where
   catch (EM(Right x)) h = EM (Right x)
-  catch (EM(Left  e)) h = case fromException e of
-                            Nothing -> EM (Left e)
-                            Just e' -> h e'
+  catch (EM(Left  (WrapException e))) h = case fromException e of
+                                          Nothing -> EM (Left (WrapException e))
+                                          Just e' -> h e'
 
 data MonadZero = MonadZero deriving (Show, Typeable)
 instance Exception MonadZero

@@ -14,6 +14,7 @@ import Control.Monad.Trans.RWS
 import Control.Exception (Exception(..), SomeException)
 import qualified Control.Exception
 import Data.Monoid
+import Data.Typeable
 import Prelude hiding (catch)
 
 {-| @Throws@ is the mechanism used to keep a type level
@@ -28,6 +29,7 @@ import Prelude hiding (catch)
  > instance Throws FileNotFoundException (Caught IOException l)
 
 -}
+
 class Exception e => Throws e s
 
 class Monad m => MonadThrow e m where
@@ -52,8 +54,13 @@ instance Throws e l => Throws e (Caught e1 l)
 --   Capturing SomeException captures every possible exception
 instance Exception e => Throws e (Caught SomeException l)
 
--- Throw and Catch instances for the Either and ErrorT monads
+-- Labelled SomeException
+-- ------------------------
+newtype WrapException l = WrapException {wrapException::SomeException} deriving Show
 
+
+-- Throw and Catch instances for the Either and ErrorT monads
+-- -----------------------------------------------------------
 instance (Error e) => MonadThrow e (Either e) where throw = Left
 instance (Error e) => MonadCatch e (Either e) (Either e) where catch m h = either h Right m
 
