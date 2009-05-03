@@ -46,10 +46,10 @@ instance Exception e => MonadThrow e IO where
    throw = Control.Exception.throw
 
 class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
-   catch :: m a -> (e -> m' a) -> m' a
+   catch   :: m a -> (e -> m' a) -> m' a
 
 instance Exception e => MonadCatch e IO IO where
-   catch = Control.Exception.catch
+   catch   = Control.Exception.catch
 
 -- | A type level witness of a exception handler.
 data Caught e l
@@ -74,8 +74,9 @@ instance (Error e) => MonadCatch e (Either e) (Either e) where catch m h = eithe
 instance (Error e, Monad m) => MonadThrow e (ErrorT e m) where throw = throwError
 instance (Error e, Monad m) => MonadCatch e (ErrorT e m) (ErrorT e m) where catch = catchError
 
--- Instances for transformers (requires undecidable instances in some cases)
 
+-- Instances for transformers (requires undecidable instances in some cases)
+-- -------------------------------------------------------------------------
 instance MonadThrow e m    => MonadThrow e (ListT m)            where throw = lift . throw
 instance MonadCatch e m m' => MonadCatch e (ListT m) (ListT m') where catch (ListT m) h = ListT (catch m (runListT . h))
 
