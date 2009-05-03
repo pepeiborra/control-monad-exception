@@ -1,6 +1,8 @@
 
 module Control.Monad.Exception (
-    module Control.Monad.Exception,
+    EM(..),  evalEM,  runEM,
+    EMT(..), evalEMT, runEMT,
+    MonadZeroException(..),
     module Control.Monad.Exception.Class ) where
 
 import Control.Monad.Exception.Class

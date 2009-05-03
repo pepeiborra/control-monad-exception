@@ -1,7 +1,8 @@
 module Control.Monad.Exception.Class (
        module Control.Monad,
-       module Control.Monad.Exception.Class,
-       Exception(..), SomeException) where
+       MonadThrow(..), MonadCatch(..),
+       Throws(..), Caught(..),
+       WrapException(..), Exception(..), SomeException) where
 
 import Control.Monad
 import Control.Monad.Trans
