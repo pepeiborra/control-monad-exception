@@ -51,6 +51,7 @@ instance Exception e => MonadCatch e (EM (Caught e l)) (EM l) where
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
+newtype EMT l m a = EMT {unEMT :: m (Either (WrapException l) a)}
 
 -- Requires undecidable instances
 instance Throws MonadZeroException l => MonadPlus (EM l) where
@@ -58,10 +59,9 @@ instance Throws MonadZeroException l => MonadPlus (EM l) where
   mplus (EM (Left _))   p2 = p2
   mplus p1@(EM Right{}) _ = p1
 
-newtype EMT l m a = EMT {unEMT :: m (Either SomeException a)}
 
 evalEMT :: Monad m => EMT (Caught SomeException l) m a -> m (Either SomeException a)
-evalEMT (EMT m) = m
+evalEMT (EMT m) = mapLeft wrapException `liftM` m
 
 runEMT :: Monad m => EMT l m a -> m a
 runEMT (EMT m) = liftM f m where
@@ -84,14 +84,14 @@ instance Monad m => Monad (EMT l m) where
                   Right x -> unEMT (f x)
 
 instance (Exception e, Throws e l, Monad m) => MonadThrow e (EMT l m) where
-  throw = EMT . return . Left . toException
+  throw = EMT . return . Left . WrapException . toException
 instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
   catch emt h = EMT $ do
                 v <- unEMT emt
                 case v of
                   Right x -> return (Right x)
-                  Left  e -> case fromException e of
-                               Nothing -> return (Left e)
+                  Left (WrapException e) -> case fromException e of
+                               Nothing -> return (Left (WrapException e))
                                Just e' -> unEMT (h e')
 
 
