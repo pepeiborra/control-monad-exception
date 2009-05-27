@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -17,8 +18,13 @@ import Control.Monad.Trans.Reader
 import Control.Monad.Trans.State
 import Control.Monad.Trans.Writer
 import Control.Monad.Trans.RWS
+#if __GLASGOW_HASKELL__ < 610
+import Control.Exception.Extensible (Exception(..), SomeException)
+import qualified Control.Exception.Extensible as Control.Exception
+#else
 import Control.Exception (Exception(..), SomeException)
 import qualified Control.Exception
+#endif
 import Data.Monoid
 import Prelude hiding (catch)
 
