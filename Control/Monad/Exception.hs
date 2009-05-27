@@ -3,11 +3,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 module Control.Monad.Exception (
-    EM(..),  evalEM,  runEM,
+    EM,  evalEM,  runEM,
     EMT(..), evalEMT, runEMT,
     MonadZeroException(..),
     module Control.Monad.Exception.Class ) where
 
+import Control.Monad.Identity
 import Control.Monad.Exception.Class
 import Control.Monad.Fix
 import Control.Monad.Trans
@@ -17,10 +18,11 @@ import Data.Monoid
 import Data.Typeable
 import Prelude hiding (catch)
 
-newtype EM l a = EM {unEM::Either (WrapException l) a}
+type EM l = EMT l Identity
+
 -- | Run a computation which may fail
 evalEM :: EM (Caught SomeException l) a -> Either SomeException a
-evalEM (EM a) = mapLeft wrapException a
+evalEM (EMT a) = mapLeft wrapException (runIdentity a)
 
 mapLeft :: (a -> b) -> Either a r -> Either b r
 mapLeft f (Left x)  = Left (f x)
@@ -28,37 +30,12 @@ mapLeft _ (Right x) = Right x
 
 -- | Run a safe computation
 runEM :: EM l a -> a
-runEM (EM (Right a)) = a
-runEM _ = error "evalEM : The impossible happened"
-
-instance Functor (EM l) where
-    fmap _ (EM (Left e))  = EM (Left e)
-    fmap f (EM (Right x)) = EM (Right (f x))
-
-instance Monad (EM l) where
-  return = EM . Right
-  EM (Right x) >>= f = f x
-  EM (Left e) >>= _ = EM (Left e)
-
-instance (Exception e, Throws e l) => MonadThrow e (EM l) where
-  throw = EM . Left . WrapException . toException
-instance Exception e => MonadCatch e (EM (Caught e l)) (EM l) where
-  catch (EM(Right x)) _ = EM (Right x)
-  catch (EM(Left  (WrapException e))) h = case fromException e of
-                                          Nothing -> EM (Left (WrapException e))
-                                          Just e' -> h e'
+runEM = runIdentity . runEMT
 
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
 newtype EMT l m a = EMT {unEMT :: m (Either (WrapException l) a)}
-
--- Requires undecidable instances
-instance Throws MonadZeroException l => MonadPlus (EM l) where
-  mzero                    = throw MonadZeroException
-  mplus (EM (Left _))   p2 = p2
-  mplus p1@(EM Right{}) _ = p1
-
 
 evalEMT :: Monad m => EMT (Caught SomeException l) m a -> m (Either SomeException a)
 evalEMT (EMT m) = mapLeft wrapException `liftM` m
