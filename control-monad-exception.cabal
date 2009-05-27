@@ -68,4 +68,4 @@ Library
   exposed-modules:
      Control.Monad.Exception.Class
      Control.Monad.Exception
-  ghc-options: -Wall -Werror -fno-warn-name-shadowing
+  ghc-options: -Wall -fno-warn-name-shadowing
