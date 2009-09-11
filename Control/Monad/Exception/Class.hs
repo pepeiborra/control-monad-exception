@@ -4,11 +4,16 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE OverlappingInstances #-}
+
 module Control.Monad.Exception.Class (
        module Control.Monad,
        MonadThrow(..), MonadCatch(..),
        Throws, Caught,
-       WrapException(..), Exception(..), SomeException) where
+       WrapException(..), Exception(..), SomeException(..),
+       UncaughtException, NoExceptions, ParanoidMode
+       ) where
 
 import Control.Monad
 import Control.Monad.Trans
@@ -28,9 +33,15 @@ import qualified Control.Exception
 import Data.Monoid
 import Prelude hiding (catch)
 
+
+-- Closing a type class with an unexported constraint
+--  @Private@  is unexported
+class Private l
+instance Private (Caught e l)
+
 {-| @Throws@ is the mechanism used to keep a type level
     list of exceptions.
-    .
+
     Usually there is no need for the user of this library
     to add further instances to @Throws@ except in one
     case: to encode subtyping. For instance if we have
@@ -40,8 +51,7 @@ import Prelude hiding (catch)
  > instance Throws FileNotFoundException (Caught IOException l)
 
 -}
-
-class Exception e => Throws e s
+class (Private l, Exception e) => Throws e l --  | e -> l
 
 class Monad m => MonadThrow e m where
     throw :: e -> m a
@@ -55,20 +65,33 @@ class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
 instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch
 
+
 -- | A type level witness of a exception handler.
 data Caught e l
 
 instance Exception e => Throws e (Caught e l)
-instance Throws e l => Throws e (Caught e1 l)
+instance Throws e l  => Throws e (Caught e' l)
+
 -- | @SomeException@ is at the top of the exception hierarchy
 --   .
 --   Capturing SomeException captures every possible exception
 instance Exception e => Throws e (Caught SomeException l)
 
+data NoExceptions
+instance Private NoExceptions
+
+data ParanoidMode
+instance Private ParanoidMode
+
+-- | Uncaught Exceptions model runtime exceptions which are not checked.
+--
+--   In order to declare a runtime exception it must be made an instance of @UncaughtException@
+class Exception e => UncaughtException e
+instance UncaughtException e => Throws e NoExceptions
+
 -- Labelled SomeException
 -- ------------------------
 newtype WrapException l = WrapException {wrapException::SomeException} deriving Show
-
 
 -- Throw and Catch instances for the Either and ErrorT monads
 -- -----------------------------------------------------------

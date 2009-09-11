@@ -2,12 +2,15 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverlappingInstances #-}
+
 module Control.Monad.Exception (
-    EM,  evalEM,  runEM,
-    EMT(..), evalEMT, runEMT,
+    EM,  evalEM, runEM, runEMParanoid,
+    EMT, evalEMT, runEMT, runEMTParanoid,
     MonadZeroException(..),
     module Control.Monad.Exception.Class ) where
 
+import Control.Applicative
 import Control.Monad.Identity
 import Control.Monad.Exception.Class
 import Control.Monad.Fix
@@ -20,30 +23,53 @@ import Prelude hiding (catch)
 
 type EM l = EMT l Identity
 
--- | Run a computation which may fail
-evalEM :: EM (Caught SomeException l) a -> Either SomeException a
-evalEM (EMT a) = mapLeft wrapException (runIdentity a)
 
+{-
+data AnyException
+
+instance Exception e => Throws e AnyException
+
+-- | Run a computation which may fail
+evalEM :: EM AnyException a -> Either SomeException a
+evalEM (EMT a) = mapLeft wrapException (runIdentity a)
+-}
 mapLeft :: (a -> b) -> Either a r -> Either b r
 mapLeft f (Left x)  = Left (f x)
 mapLeft _ (Right x) = Right x
 
 -- | Run a safe computation
-runEM :: EM l a -> a
+evalEM :: EM (AnyException l) a -> Either SomeException a
+evalEM = runIdentity . evalEMT
+
+-- | Run a safe computation
+runEM :: EM NoExceptions a -> a
 runEM = runIdentity . runEMT
+
+-- | Run a safe computation
+runEMParanoid :: EM ParanoidMode a -> a
+runEMParanoid = runIdentity . runEMTParanoid
 
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
 newtype EMT l m a = EMT {unEMT :: m (Either (WrapException l) a)}
 
-evalEMT :: Monad m => EMT (Caught SomeException l) m a -> m (Either SomeException a)
+type AnyException = Caught SomeException
+
+evalEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
 evalEMT (EMT m) = mapLeft wrapException `liftM` m
 
-runEMT :: Monad m => EMT l m a -> m a
-runEMT (EMT m) = liftM f m where
+runEMT_gen :: Monad m => EMT l m a -> m a
+runEMT_gen (EMT m) = liftM f m where
   f (Right x) = x
-  f (Left  _) = error "evalEMT: The impossible happened"
+  f (Left  (WrapException (SomeException e))) = error (show e)
+
+runEMT :: Monad m => EMT NoExceptions m a -> m a
+runEMT = runEMT_gen
+
+-- | Check even runtime (@UncaughtException@) exceptions
+runEMTParanoid :: Monad m => EMT ParanoidMode m a -> m a
+runEMTParanoid = runEMT_gen
 
 instance Monad m => Functor (EMT l m) where
   fmap f emt = EMT $ do
@@ -60,10 +86,17 @@ instance Monad m => Monad (EMT l m) where
                   Left e  -> return (Left e)
                   Right x -> unEMT (f x)
 
+instance Monad m => Applicative (EMT l m) where
+  pure  = return
+  (<*>) = ap
+
 instance (Exception e, Throws e l, Monad m) => MonadThrow e (EMT l m) where
   throw = EMT . return . Left . WrapException . toException
 instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
-  catch emt h = EMT $ do
+  catch = catchEMT
+
+catchEMT :: (Exception e, Monad m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
+catchEMT emt h = EMT $ do
                 v <- unEMT emt
                 case v of
                   Right x -> return (Right x)
