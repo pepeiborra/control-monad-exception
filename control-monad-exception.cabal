@@ -65,6 +65,7 @@ Library
                EmptyDataDecls,
                DeriveDataTypeable,
                UndecidableInstances
+  build-depends: pretty, template-haskell
   exposed-modules:
      Control.Monad.Exception.Class
      Control.Monad.Exception

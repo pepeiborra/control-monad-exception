@@ -56,12 +56,16 @@ class (Private l, Exception e) => Throws e l --  | e -> l
 
 class Monad m => MonadThrow e m where
     throw :: e -> m a
+    throwWithSrcLoc :: String -> e -> m a
+    throwWithSrcLoc _ = throw
 
 instance Exception e => MonadThrow e IO where
    throw = Control.Exception.throw
 
 class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
    catch   :: m a -> (e -> m' a) -> m' a
+   catchWithSrcLoc :: m a -> ([String] -> e -> m' a) -> m' a
+   catchWithSrcLoc m h = catch m (h [])
 
 instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch

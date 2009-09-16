@@ -3,10 +3,13 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverlappingInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Control.Monad.Exception (
     EM,  evalEM, runEM, runEMParanoid,
     EMT, evalEMT, runEMT, runEMTParanoid,
+    WithSrcLoc, withLocTH, showExceptionWithTrace,
     MonadZeroException(..),
     module Control.Monad.Exception.Class ) where
 
@@ -19,7 +22,10 @@ import Control.Monad.Cont.Class
 import Control.Monad.RWS.Class
 import Data.Monoid
 import Data.Typeable
+import qualified Language.Haskell.TH.Syntax
+import Language.Haskell.TH.Syntax hiding (lift)
 import Prelude hiding (catch)
+import Text.PrettyPrint
 
 type EM l = EMT l Identity
 
@@ -52,18 +58,23 @@ runEMParanoid = runIdentity . runEMTParanoid
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
-newtype EMT l m a = EMT {unEMT :: m (Either (WrapException l) a)}
+newtype EMT l m a = EMT {unEMT :: m (Either ([String], WrapException l) a)}
 
 type AnyException = Caught SomeException
 
 -- | Run explicitly handling exceptions
 evalEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
-evalEMT (EMT m) = mapLeft wrapException `liftM` m
+evalEMT (EMT m) = mapLeft (wrapException.snd) `liftM` m
 
 runEMT_gen :: Monad m => EMT l m a -> m a
 runEMT_gen (EMT m) = liftM f m where
   f (Right x) = x
-  f (Left  (WrapException (SomeException e))) = error (show e)
+  f (Left  e) = error (uncurry showExceptionWithTrace e)
+
+showExceptionWithTrace :: Show e => [String] -> e -> String
+showExceptionWithTrace trace e = render$
+             text (show e) $$
+             text " in" <+> (vcat (map text $ reverse trace))
 
 -- | Run a safe computation
 runEMT :: Monad m => EMT NoExceptions m a -> m a
@@ -93,19 +104,46 @@ instance Monad m => Applicative (EMT l m) where
   (<*>) = ap
 
 instance (Exception e, Throws e l, Monad m) => MonadThrow e (EMT l m) where
-  throw = EMT . return . Left . WrapException . toException
+  throw = EMT . return . (\e -> Left ([],e)) . WrapException . toException
 instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
-  catch = catchEMT
+  catchWithSrcLoc = catchEMT
+  catch emt h = catchEMT emt (\_ -> h)
 
-catchEMT :: (Exception e, Monad m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
+catchEMT :: (Exception e, Monad m) => EMT (Caught e l) m a -> ([String] -> e -> EMT l m a) -> EMT l m a
 catchEMT emt h = EMT $ do
                 v <- unEMT emt
                 case v of
                   Right x -> return (Right x)
-                  Left (WrapException e) -> case fromException e of
-                               Nothing -> return (Left (WrapException e))
-                               Just e' -> unEMT (h e')
+                  Left (trace, WrapException e) -> case fromException e of
+                               Nothing -> return (Left (trace,WrapException e))
+                               Just e' -> unEMT (h trace e')
+withLocTH :: Q Exp
+withLocTH = do
+  loc <- qLocation
+  let loc_msg = showLoc loc
+  [| withLoc loc_msg |]
+ where
+   showLoc Loc{loc_module, loc_filename, loc_start} = render $
+                     {- text loc_package <> dot <> -}
+                     text loc_module <> dot <> text loc_filename <> colon <+> text (show loc_start)
+   dot = char '.'
 
+-- | Generating stack traces for exceptions
+class WithSrcLoc a where
+-- | 'withLoc' records the given source location in the exception stack trace
+--   when used to wrap a EMT computation.
+--
+--   On any other monad or value, 'withLoc' is defined as the identity
+  withLoc :: String -> a -> a
+
+instance WithSrcLoc a where withLoc _ = id
+
+instance Monad m => WithSrcLoc (EMT l m a) where
+    withLoc loc (EMT emt) = EMT $ do
+                     current <- emt
+                     case current of
+                       (Left (tr, a)) -> return (Left (loc:tr, a))
+                       _              -> return current
 
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
