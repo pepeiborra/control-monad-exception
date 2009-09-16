@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.4.1
+version: 0.4.2
 Cabal-Version:  >= 1.2.3
 build-type: Simple
 license: PublicDomain
@@ -34,20 +34,20 @@ description:
   > eval :: (Throws DivideByZero l, Throws SumOverflow l) => Expr -> EM l Double
   > eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
   > runEM(eval `catch` \ (e::SomeException) -> return (-1))  :: Expr -> Double
-
- New in version 0.4:
+  .
+  New in version 0.4:
     * (optionally) Unchecked exceptions (with 'UncaughtException')
-    * Exception stack traces (with 'WithSrcLoc'). For example
-
+    * Exception stack traces (with 'WithSrcLoc'). /Example/
+  .
   > f () = $withLocTH $ throw MyException
   > g a  = $withLocTH $ f a
-
+  >
   > main = runEMT $ $withLocTH $ do
   > g () `catchWithSrcLoc` \loc MyException ->
-         lift $ putStrLn (showExceptionWithTrace loc MyException)
-
+  >       lift $ putStrLn (showExceptionWithTrace loc MyException)
+  .
   Running @main@ produces the output:
-
+  .
   > *Main> main
   > MyException
   >  in Main.docatch.hs: (12,6)
