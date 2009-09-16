@@ -17,12 +17,22 @@ module Control.Monad.Exception.Class (
 
 import Control.Monad
 import Control.Monad.Trans
+#if TRANSFORMERS
 import Control.Monad.Trans.Error
 import Control.Monad.Trans.List
 import Control.Monad.Trans.Reader
 import Control.Monad.Trans.State
 import Control.Monad.Trans.Writer
 import Control.Monad.Trans.RWS
+#else
+import Control.Monad.Error
+import Control.Monad.List
+import Control.Monad.Reader
+import Control.Monad.State
+import Control.Monad.Writer
+import Control.Monad.RWS
+#endif
+
 #if __GLASGOW_HASKELL__ < 610
 import Control.Exception.Extensible (Exception(..), SomeException)
 import qualified Control.Exception.Extensible as Control.Exception
