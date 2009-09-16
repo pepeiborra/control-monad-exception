@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverlappingInstances #-}
 
@@ -107,7 +107,7 @@ catchEMT emt h = EMT $ do
                                Just e' -> unEMT (h e')
 
 
-instance (Monad m, Throws MonadZeroException l) => MonadPlus (EMT l m) where
+instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
   mplus emt1 emt2 = EMT$ do
                      v1 <- unEMT emt1
