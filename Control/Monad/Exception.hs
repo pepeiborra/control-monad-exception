@@ -37,7 +37,7 @@ mapLeft :: (a -> b) -> Either a r -> Either b r
 mapLeft f (Left x)  = Left (f x)
 mapLeft _ (Right x) = Right x
 
--- | Run a safe computation
+-- | Run a computation explicitly handling exceptions
 evalEM :: EM (AnyException l) a -> Either SomeException a
 evalEM = runIdentity . evalEMT
 
@@ -45,7 +45,7 @@ evalEM = runIdentity . evalEMT
 runEM :: EM NoExceptions a -> a
 runEM = runIdentity . runEMT
 
--- | Run a safe computation
+-- | Run a safe computation checking even unchecked (@UncaughtExceptions@) exceptions
 runEMParanoid :: EM ParanoidMode a -> a
 runEMParanoid = runIdentity . runEMTParanoid
 
@@ -56,6 +56,7 @@ newtype EMT l m a = EMT {unEMT :: m (Either (WrapException l) a)}
 
 type AnyException = Caught SomeException
 
+-- | Run explicitly handling exceptions
 evalEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
 evalEMT (EMT m) = mapLeft wrapException `liftM` m
 
@@ -64,10 +65,11 @@ runEMT_gen (EMT m) = liftM f m where
   f (Right x) = x
   f (Left  (WrapException (SomeException e))) = error (show e)
 
+-- | Run a safe computation
 runEMT :: Monad m => EMT NoExceptions m a -> m a
 runEMT = runEMT_gen
 
--- | Check even runtime (@UncaughtException@) exceptions
+-- | Run a safe computation checking even unchecked (@UncaughtException@) exceptions
 runEMTParanoid :: Monad m => EMT ParanoidMode m a -> m a
 runEMTParanoid = runEMT_gen
 

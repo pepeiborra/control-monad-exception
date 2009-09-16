@@ -31,6 +31,7 @@ import Control.Exception (Exception(..), SomeException)
 import qualified Control.Exception
 #endif
 import Data.Monoid
+import Data.Typeable
 import Prelude hiding (catch)
 
 
@@ -83,15 +84,17 @@ instance Private NoExceptions
 data ParanoidMode
 instance Private ParanoidMode
 
--- | Uncaught Exceptions model runtime exceptions which are not checked.
+-- | Uncaught Exceptions model unchecked exceptions (a la RuntimeException in Java)
 --
---   In order to declare a runtime exception it must be made an instance of @UncaughtException@
+--   In order to declare an unchecked exception @e@,
+--   all that is needed is to make @e@ an instance of @UncaughtException@
 class Exception e => UncaughtException e
 instance UncaughtException e => Throws e NoExceptions
 
 -- Labelled SomeException
 -- ------------------------
 newtype WrapException l = WrapException {wrapException::SomeException} deriving Show
+-- | @WrapException@ adds a phantom type parameter @l@ to @SomeException@
 
 -- Throw and Catch instances for the Either and ErrorT monads
 -- -----------------------------------------------------------
