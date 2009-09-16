@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.4
+version: 0.4.1
 Cabal-Version:  >= 1.2.3
 build-type: Simple
 license: PublicDomain
@@ -37,7 +37,21 @@ description:
 
  New in version 0.4:
     * (optionally) Unchecked exceptions (with 'UncaughtException')
-    * Exception stack traces (with 'WithSrcLoc')
+    * Exception stack traces (with 'WithSrcLoc'). For example
+
+  > f () = $withLocTH $ throw MyException
+  > g a  = $withLocTH $ f a
+
+  > main = runEMT $ $withLocTH $ do
+  > g () `catchWithSrcLoc` \loc MyException ->
+         lift $ putStrLn (showExceptionWithTrace loc MyException)
+
+  Running @main@ produces the output:
+
+  > *Main> main
+  > MyException
+  >  in Main.docatch.hs: (12,6)
+  >     Main.docatch.hs: (11,7)
 
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads
