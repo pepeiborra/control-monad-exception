@@ -93,8 +93,8 @@ instance UncaughtException e => Throws e NoExceptions
 
 -- Labelled SomeException
 -- ------------------------
-newtype WrapException l = WrapException {wrapException::SomeException} deriving Show
 -- | @WrapException@ adds a phantom type parameter @l@ to @SomeException@
+newtype WrapException l = WrapException {wrapException::SomeException} deriving (Show,Typeable)
 
 -- Throw and Catch instances for the Either and ErrorT monads
 -- -----------------------------------------------------------
