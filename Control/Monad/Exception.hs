@@ -30,15 +30,6 @@ import Text.PrettyPrint
 type EM l = EMT l Identity
 
 
-{-
-data AnyException
-
-instance Exception e => Throws e AnyException
-
--- | Run a computation which may fail
-evalEM :: EM AnyException a -> Either SomeException a
-evalEM (EMT a) = mapLeft wrapException (runIdentity a)
--}
 mapLeft :: (a -> b) -> Either a r -> Either b r
 mapLeft f (Left x)  = Left (f x)
 mapLeft _ (Right x) = Right x
@@ -129,10 +120,11 @@ withLocTH = do
 
 -- | Generating stack traces for exceptions
 class WithSrcLoc a where
--- | 'withLoc' records the given source location in the exception stack trace
---   when used to wrap a EMT computation.
---
---   On any other monad or value, 'withLoc' is defined as the identity
+  -- | 'withLoc' records the given source location in the exception stack trace
+  --   when used to wrap a EMT computation.
+  --
+  --   On any other monad or value, 'withLoc' is defined as the identity
+  -- | hello
   withLoc :: String -> a -> a
 
 instance WithSrcLoc a where withLoc _ = id
