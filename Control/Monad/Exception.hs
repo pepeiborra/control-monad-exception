@@ -124,9 +124,8 @@ withLocTH = do
   [| withLoc loc_msg |]
  where
    showLoc Loc{loc_module, loc_filename, loc_start} = render $
-                     {- text loc_package <> dot <> -}
-                     text loc_module <> dot <> text loc_filename <> colon <+> text (show loc_start)
-   dot = char '.'
+                     {- text loc_package <> char '.' <> -}
+                     text loc_module <> parens (text loc_filename) <> colon <+> text (show loc_start)
 
 -- | Generating stack traces for exceptions
 class WithSrcLoc a where
