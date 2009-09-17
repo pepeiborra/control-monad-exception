@@ -9,7 +9,7 @@
 module Control.Monad.Exception (
     EM,  evalEM, runEM, runEMParanoid,
     EMT, evalEMT, runEMT, runEMTParanoid,
-    WithSrcLoc, withLocTH, showExceptionWithTrace,
+    WithSrcLoc(..), withLocTH, showExceptionWithTrace,
     MonadZeroException(..),
     module Control.Monad.Exception.Class ) where
 
