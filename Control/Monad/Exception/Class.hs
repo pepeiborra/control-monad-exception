@@ -16,8 +16,8 @@ module Control.Monad.Exception.Class (
        ) where
 
 import Control.Monad
-import Control.Monad.Trans
 #if TRANSFORMERS
+import Control.Monad.Trans
 import Control.Monad.Trans.Error
 import Control.Monad.Trans.List
 import Control.Monad.Trans.Reader
