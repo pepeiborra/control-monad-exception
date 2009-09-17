@@ -48,7 +48,7 @@ description:
   >       g () `catchWithSrcLoc` \loc MyException ->
   >              lift $ putStrLn (showExceptionWithTrace loc MyException)
   .
-  > -- Running @main@ produces the output:
+  > -- Running main produces the output:
   .
   >       *Main> main
   >       MyException
