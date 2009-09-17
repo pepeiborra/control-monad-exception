@@ -108,6 +108,11 @@ catchEMT emt h = EMT $ do
                   Left (trace, WrapException e) -> case fromException e of
                                Nothing -> return (Left (trace,WrapException e))
                                Just e' -> unEMT (h trace e')
+
+-- | 'withLocTH' is a convenient TH macro which expands to 'withLoc' @\<source location\>@
+--   Usage:
+--
+--  > f x = $withLocTH $ do
 withLocTH :: Q Exp
 withLocTH = do
   loc <- qLocation
