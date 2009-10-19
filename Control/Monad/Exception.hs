@@ -224,7 +224,6 @@ class WithSrcLoc a where
   --   when used to wrap a EMT computation.
   --
   --   On any other monad or value, 'withLoc' is defined as the identity
-  -- | hello
   withLoc :: String -> a -> a
 
 instance WithSrcLoc a where withLoc _ = id
