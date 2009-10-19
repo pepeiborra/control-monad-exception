@@ -55,13 +55,12 @@ type AnyException = Caught SomeException
 
 -- | Run explicitly handling exceptions
 tryEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
-tryEMT (EMT m) = mapLeft (wrapException.snd) `liftM` m
+tryEMT (EMT m) = mapLeft (unwrapException.snd) `liftM` m
 
 runEMT_gen :: Monad m => EMT l m a -> m a
 runEMT_gen (EMT m) = liftM f m where
   f (Right x) = x
-  f (Left  e) = error (uncurry showExceptionWithTrace e)
-
+  f (Left (loc,e)) = error (showExceptionWithTrace loc (unwrapException e))
 
 -- | Run a safe computation
 runEMT :: Monad m => EMT NoExceptions m a -> m a
