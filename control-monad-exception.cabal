@@ -98,5 +98,6 @@ Library
   build-depends: pretty, template-haskell
   exposed-modules:
      Control.Monad.Exception.Class
+     Control.Monad.Exception.Throws
      Control.Monad.Exception
   ghc-options: -Wall -fno-warn-name-shadowing

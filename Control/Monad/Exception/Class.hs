@@ -9,10 +9,9 @@
 
 module Control.Monad.Exception.Class (
        module Control.Monad,
+       module Control.Monad.Exception.Throws,
        MonadThrow(..), MonadCatch(..),
-       Throws, Caught,
        WrapException(..), Exception(..), SomeException(..),
-       UncaughtException, NoExceptions, ParanoidMode
        ) where
 
 import Control.Monad
@@ -45,24 +44,8 @@ import Data.Typeable
 import Prelude hiding (catch)
 
 
--- Closing a type class with an unexported constraint
---  @Private@  is unexported
-class Private l
-instance Private (Caught e l)
+import Control.Monad.Exception.Throws
 
-{-| @Throws@ is the mechanism used to keep a type level
-    list of exceptions.
-
-    Usually there is no need for the user of this library
-    to add further instances to @Throws@ except in one
-    case: to encode subtyping. For instance if we have
-    an @IOException@ type and a @FIleNotFoundException@ subcase,
-    we need to add the instance:
-
- > instance Throws FileNotFoundException (Caught IOException l)
-
--}
-class (Private l, Exception e) => Throws e l --  | e -> l
 
 class Monad m => MonadThrow e m where
     throw :: e -> m a
@@ -81,29 +64,7 @@ instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch
 
 
--- | A type level witness of a exception handler.
-data Caught e l
 
-instance Exception e => Throws e (Caught e l)
-instance Throws e l  => Throws e (Caught e' l)
-
--- | @SomeException@ is at the top of the exception hierarchy
---   .
---   Capturing SomeException captures every possible exception
-instance Exception e => Throws e (Caught SomeException l)
-
-data NoExceptions
-instance Private NoExceptions
-
-data ParanoidMode
-instance Private ParanoidMode
-
--- | Uncaught Exceptions model unchecked exceptions (a la RuntimeException in Java)
---
---   In order to declare an unchecked exception @e@,
---   all that is needed is to make @e@ an instance of @UncaughtException@
-class Exception e => UncaughtException e
-instance UncaughtException e => Throws e NoExceptions
 
 -- Labelled SomeException
 -- ------------------------
