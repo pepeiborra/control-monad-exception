@@ -8,7 +8,9 @@ maintainer: pepeiborra@gmail.com
 homepage: http://safe-tools.dsic.upv.es/mediawiki/index.php/Jose_Iborra/Papers/Exceptions
 description: 
   This package provides explicitly typed, checked exceptions as a library.
-
+  .
+  Computations throwing different types of exception can be combined seamlessly.
+  .
   /Example/
   .
   > data Expr = Add Expr Expr | Div Expr Expr | Val Double
@@ -35,20 +37,22 @@ description:
   > eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
   > runEM(eval `catch` \ (e::SomeException) -> return (-1))  :: Expr -> Double
   .
-  New in version 0.4:
   .
-    * Support for unchecked exceptions (with 'UncaughtException')
+  This package provides, among other things:
   .
-    * Support for exception stack traces (with 'WithSrcLoc'). /Example/
+    * Support for explicitly documented, unchecked exceptions (with 'tryEM').
+  .
+    * Support for selective unchecked exceptions (with 'UncaughtException').
+  .
+    * Support for exception stack traces (experimental). /Example:/
   .
   >       f () = $withLocTH $ throw MyException
   >       g a  = $withLocTH $ f a
   >
   >       main = runEMT $ $withLocTH $ do
-  >       g () `catchWithSrcLoc` \loc MyException ->
-  >              lift $ putStrLn (showExceptionWithTrace loc MyException)
+  >       g () `catchWithSrcLoc` \loc (e::MyException) -> lift(putStrLn$ showExceptionWithTrace loc e)
   .
-  > -- Running main produces the output:
+  >        -- Running main produces the output:
   .
   >       *Main> main
   >       MyException

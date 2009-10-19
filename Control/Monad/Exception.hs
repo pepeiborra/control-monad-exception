@@ -6,6 +6,107 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
+{-|
+A Monad Transformer for explicitly typed checked exceptions.
+
+The exceptions thrown by a computation are inferred by the typechecker
+and appear in the type signature of the computation as 'Throws' constraints.
+
+Exceptions are defined using the extensible exceptions framework of Marlow (documented in "Control.Exception"):
+
+ * /An Extensible Dynamically-Typed Hierarchy of Exceptions/, by Simon Marlow, in /Haskell '06/.
+
+  /Example/
+
+  > data DivideByZero = DivideByZero deriving (Show, Typeable)
+  > data SumOverflow  = SumOverflow  deriving (Show, Typeable)
+  
+  > instance Exception DivideByZero
+  > instance Exception SumOverflow
+  
+  > data Expr = Add Expr Expr | Div Expr Expr | Val Double
+
+  > eval (Val x)     = return x
+  > eval (Add a1 a2) = do
+  >    v1 <- eval a1
+  >    v2 <- eval a2
+  >    let sum = v1 + v2
+  >    if sum < v1 || sum < v2 then throw SumOverflow else return sum
+  > eval (Div a1 a2) = do
+  >    v1 <- eval a1
+  >    v2 <- eval a2
+  >    if v2 == 0 then throw DivideByZero else return (v1 / v2)
+
+  GHCi infers the following types
+  
+  > eval                                             :: (Throws DivideByZero l, Throws SumOverflow l) => Expr -> EM l Double
+  > eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
+  > runEM(eval `catch` \ (e::SomeException) -> return (-1))
+  >                                                  :: Expr -> Double
+
+/Notes about type errors and exception hierarchies/
+
+ * A type error of the form:
+
+>    No instance for (UncaughtException MyException)
+>      arising from a use of `g' at examples/docatch.hs:21:32-35
+>    Possible fix:
+>      add an instance declaration for (UncaughtException MyException)
+>    In the expression: g ()
+
+is the type checker saying:
+
+\"hey, you are trying to run a computation which throws a @MyException@ without handling it, and I won't let you\"
+
+Either handle it or declare @MyException@ as an 'UncaughtException'.
+
+ * A type error of the form:
+
+>    Overlapping instances for Throws MyException (Caught e NoExceptions)
+>      arising from a use of `g' at docatch.hs:24:3-6
+>    Matching instances:
+>      instance (Throws e l) => Throws e (Caught e' l)
+>        -- Defined at ../Control/Monad/Exception/Throws.hs:46:9-45
+>      instance (Exception e) => Throws e (Caught e l)
+>        -- Defined at ../Control/Monad/Exception/Throws.hs:47:9-44
+>    (The choice depends on the instantiation of `e'
+>    ...
+
+ is due to an exception handler for @MyException@
+missing a type annotation to pin down the type of the exception.
+
+ * If your sets of exceptions are hierarchical then you need to
+   teach 'Throws' about the hierarchy.
+
+>                                                 --   TopException
+>                                                 --         |
+>   instance Throws MidException   TopException   --         |
+>                                                 --   MidException
+>   instance Throws ChildException MidException   --         |
+>   instance Throws ChildException TopException   --         |
+>                                                 --  ChildException
+
+
+ * Stack traces are only provided for explicitly annotated program points.
+   For now there is the TH macro 'withLocTH' to help with this.
+   Eventually a preprocessor could be written to automatically insert calls
+   to 'withLoc' at every do statement.
+
+>       f () = $withLocTH $ throw MyException
+>       g a  = $withLocTH $ f a
+>
+>       main = runEMT $ $withLocTH $ do
+>       g () `catchWithSrcLoc` \loc (e::MyException) -> lift(putStrLn$ showExceptionWithTrace loc e)
+
+>        -- Running main produces the output:
+
+>       *Main> main
+>       MyException
+>        in Main(example.hs): (12,6)
+>           Main(example.hs): (11,7)
+
+
+-}
 module Control.Monad.Exception (
     EM,  tryEM, runEM, runEMParanoid,
     EMT, tryEMT, runEMT, runEMTParanoid,
@@ -25,6 +126,7 @@ import Language.Haskell.TH.Syntax hiding (lift)
 import Text.PrettyPrint
 import Prelude hiding (catch)
 
+-- | A monad of explicitly typed, checked exceptions
 type EM l = EMT l Identity
 
 
@@ -40,7 +142,7 @@ tryEM = runIdentity . tryEMT
 runEM :: EM NoExceptions a -> a
 runEM = runIdentity . runEMT
 
--- | Run a safe computation checking even unchecked (@UncaughtExceptions@) exceptions
+-- | Run a computation checking even unchecked (@UncaughtExceptions@) exceptions
 runEMParanoid :: EM ParanoidMode a -> a
 runEMParanoid = runIdentity . runEMTParanoid
 
@@ -51,7 +153,7 @@ newtype EMT l m a = EMT {unEMT :: m (Either ([String], WrapException l) a)}
 
 type AnyException = Caught SomeException
 
--- | Run explicitly handling exceptions
+-- | Run a computation explicitly handling exceptions
 tryEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
 tryEMT (EMT m) = mapLeft (unwrapException.snd) `liftM` m
 

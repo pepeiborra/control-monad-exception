@@ -8,6 +8,10 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverlappingInstances #-}
 
+
+{-| Defines 'MonadThrow' and 'MonadCatch' type classes and suitable instances for 'IO' and 'Either'.
+-}
+
 module Control.Monad.Exception.Class (
        module Control.Monad,
        module Control.Monad.Exception.Throws,
