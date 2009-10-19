@@ -9,7 +9,7 @@
 module Control.Monad.Exception (
     EM,  tryEM, runEM, runEMParanoid,
     EMT, tryEMT, runEMT, runEMTParanoid,
-    WithSrcLoc(..), withLocTH, showExceptionWithTrace,
+    WithSrcLoc(..), withLocTH,
     MonadZeroException(..),
     module Control.Monad.Exception.Class ) where
 
@@ -62,10 +62,6 @@ runEMT_gen (EMT m) = liftM f m where
   f (Right x) = x
   f (Left  e) = error (uncurry showExceptionWithTrace e)
 
-showExceptionWithTrace :: Show e => [String] -> e -> String
-showExceptionWithTrace trace e = render$
-             text (show e) $$
-             text " in" <+> (vcat (map text $ reverse trace))
 
 -- | Run a safe computation
 runEMT :: Monad m => EMT NoExceptions m a -> m a

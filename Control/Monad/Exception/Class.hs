@@ -12,6 +12,7 @@ module Control.Monad.Exception.Class (
        module Control.Monad.Exception.Throws,
        MonadThrow(..), MonadCatch(..),
        WrapException(..), Exception(..), SomeException(..),
+       showExceptionWithTrace
        ) where
 
 import Control.Monad
@@ -41,11 +42,11 @@ import qualified Control.Exception
 #endif
 import Data.Monoid
 import Data.Typeable
-import Prelude hiding (catch)
-
+import Text.PrettyPrint
 
 import Control.Monad.Exception.Throws
 
+import Prelude hiding (catch)
 
 class Monad m => MonadThrow e m where
     throw :: e -> m a
@@ -63,8 +64,18 @@ class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
 instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch
 
+{-| Given a list of source locations and an exception, @showExceptionWithTrace@ produces output of the form
 
+>       <exception details>
+>        in <module a>(<file a.hs>): (12,6)
+>           <module b>(<file b.hs>): (11,7)
+>           ...
 
+-}
+showExceptionWithTrace :: Exception e => [String] -> e -> String
+showExceptionWithTrace trace e = render$
+             text (show e) $$
+             text " in" <+> (vcat (map text $ reverse trace))
 
 -- Labelled SomeException
 -- ------------------------
