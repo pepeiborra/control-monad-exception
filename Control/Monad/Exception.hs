@@ -7,8 +7,8 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Control.Monad.Exception (
-    EM,  evalEM, runEM, runEMParanoid,
-    EMT, evalEMT, runEMT, runEMTParanoid,
+    EM,  tryEM, runEM, runEMParanoid,
+    EMT, tryEMT, runEMT, runEMTParanoid,
     WithSrcLoc(..), withLocTH, showExceptionWithTrace,
     MonadZeroException(..),
     module Control.Monad.Exception.Class ) where
@@ -35,8 +35,8 @@ mapLeft f (Left x)  = Left (f x)
 mapLeft _ (Right x) = Right x
 
 -- | Run a computation explicitly handling exceptions
-evalEM :: EM (AnyException l) a -> Either SomeException a
-evalEM = runIdentity . evalEMT
+tryEM :: EM (AnyException l) a -> Either SomeException a
+tryEM = runIdentity . tryEMT
 
 -- | Run a safe computation
 runEM :: EM NoExceptions a -> a
@@ -54,8 +54,8 @@ newtype EMT l m a = EMT {unEMT :: m (Either ([String], WrapException l) a)}
 type AnyException = Caught SomeException
 
 -- | Run explicitly handling exceptions
-evalEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
-evalEMT (EMT m) = mapLeft (wrapException.snd) `liftM` m
+tryEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
+tryEMT (EMT m) = mapLeft (wrapException.snd) `liftM` m
 
 runEMT_gen :: Monad m => EMT l m a -> m a
 runEMT_gen (EMT m) = liftM f m where
