@@ -1,80 +1,209 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>control-monad-exception-0.4.5: Explicitly typed, checked exceptions with stack traces</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
+></SCRIPT
+></HEAD
+><BODY
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="topbar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
+></TD
+><TD CLASS="title"
+>control-monad-exception-0.4.5: Explicitly typed, checked exceptions with stack traces</TD
+><TD CLASS="topbut"
+><A HREF="index.html"
+>Contents</A
+></TD
+><TD CLASS="topbut"
+><A HREF="doc-index.html"
+>Index</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>control-monad-exception-0.4.5: Explicitly typed, checked exceptions with stack traces</TD
+></TR
+><TR
+><TD CLASS="doc"
+><P
+>This package provides explicitly typed, checked exceptions as a library.
+</P
+><P
+>Computations throwing different types of exception can be combined seamlessly.
+</P
+><P
+><EM
+>Example</EM
+>
+</P
+><PRE
+> data Expr = Add Expr Expr | Div Expr Expr | Val Double
+ eval (Val x)     = return x
+ eval (Add a1 a2) = do
+    v1 &lt;- eval a1
+    v2 &lt;- eval a2
+    let sum = v1 + v2
+    if sum &lt; v1 || sum &lt; v2 then throw SumOverflow else return sum
+ eval (Div a1 a2) = do
+    v1 &lt;- eval a1
+    v2 &lt;- eval a2
+    if v2 == 0 then throw DivideByZero else return (v1 / v2)
+</PRE
+><PRE
+> data DivideByZero = DivideByZero deriving (Show, Typeable)
+ data SumOverflow  = SumOverflow  deriving (Show, Typeable)
+</PRE
+><PRE
+> instance Exception DivideByZero
+ instance Exception SumOverflow
+</PRE
+><P
+>GHCi infers the following types
+</P
+><PRE
+> eval :: (Throws DivideByZero l, Throws SumOverflow l) =&gt; Expr -&gt; EM l Double
+ eval `catch` \ (e::DivideByZero) -&gt; return (-1)  :: Throws SumOverflow l =&gt; Expr -&gt; EM l Double
+ runEM(eval `catch` \ (e::SomeException) -&gt; return (-1))  :: Expr -&gt; Double
+</PRE
+><P
+>This package provides, among other things:
+</P
+><UL
+><LI
+> Support for explicitly documented, unchecked exceptions (with <TT
+>tryEM</TT
+>).
+</LI
+><LI
+> Support for selective unchecked exceptions (with <TT
+>UncaughtException</TT
+>).
+</LI
+><LI
+> Support for exception stack traces (experimental). <EM
+>Example:</EM
+>
+</LI
+></UL
+><PRE
+>       f () = $withLocTH $ throw MyException
+       g a  = $withLocTH $ f a
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-	<title>pepeiborra/control-monad-exception @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #876801;
-		  font-family: "Helvetica,Arial,FreeSans"; 
-  		color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #7897fe; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #7897fe; }
-    h3 { text-align: center; color: #7897fe; }
-    a { color: #7897fe; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
-</head>
-
-<body>
-  <a href="http://github.com/pepeiborra/control-monad-exception"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-  
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/pepeiborra/control-monad-exception/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/pepeiborra/control-monad-exception/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-      
-    <h1><a href="http://github.com/pepeiborra/control-monad-exception">control-monad-exception</a> 
-      <span class="small">by <a href="http://github.com/pepeiborra">pepeiborra</a></span></h1>
-
-    <div class="description">
-      Explicitly Typed exceptions as a library
-    </div>
-
-    <h2>Authors</h2>
-<p>Pepe Iborra (pepeiborra@gmail.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Pepe Iborra (pepeiborra@gmail.com)<br/>      </p>
-
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/pepeiborra/control-monad-exception/zipball/master">zip</a> or
-      <a href="http://github.com/pepeiborra/control-monad-exception/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/pepeiborra/control-monad-exception</pre>
-    </p>
-      
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/pepeiborra/control-monad-exception">pepeiborra/control-monad-exception</a>
-    </div>
-    
-  </div>
-
-  
-</body>
-</html>
+       main = runEMT $ $withLocTH $ do
+       g () `catchWithSrcLoc` \loc (e::MyException) -&gt; lift(putStrLn$ showExceptionWithTrace loc e)
+</PRE
+><PRE
+>        -- Running main produces the output:
+</PRE
+><PRE
+>       *Main&gt; main
+       MyException
+        in Main(example.hs): (12,6)
+           Main(example.hs): (11,7)
+</PRE
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Modules</TD
+></TR
+><TR
+><TD
+><TABLE CLASS="vanilla2" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD STYLE="width: 50em"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'n:0')" ALT="show/hide"
+>Control</TD
+><TD
+></TD
+><TD
+></TD
+></TR
+><TR
+><TD STYLE="padding: 0; padding-left: 2em" COLSPAN="3"
+><TABLE CLASS="vanilla2" CELLSPACING="0" CELLPADDING="0" ID="n:0" STYLE="display:block;"
+><TR
+><TD STYLE="width: 48em"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'n:1')" ALT="show/hide"
+>Monad</TD
+><TD
+></TD
+><TD
+></TD
+></TR
+><TR
+><TD STYLE="padding: 0; padding-left: 2em" COLSPAN="3"
+><TABLE CLASS="vanilla2" CELLSPACING="0" CELLPADDING="0" ID="n:1" STYLE="display:block;"
+><TR
+><TD STYLE="width: 46em"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'n:2')" ALT="show/hide"
+><A HREF="Control-Monad-Exception.html"
+>Control.Monad.Exception</A
+></TD
+><TD
+></TD
+><TD
+></TD
+></TR
+><TR
+><TD STYLE="padding: 0; padding-left: 2em" COLSPAN="3"
+><TABLE CLASS="vanilla2" CELLSPACING="0" CELLPADDING="0" ID="n:2" STYLE="display:block;"
+><TR
+><TD STYLE="padding-left: 1.25em;width: 44em"
+><A HREF="Control-Monad-Exception-Class.html"
+>Control.Monad.Exception.Class</A
+></TD
+><TD
+></TD
+><TD
+></TD
+></TR
+><TR
+><TD STYLE="padding-left: 1.25em;width: 44em"
+><A HREF="Control-Monad-Exception-Throws.html"
+>Control.Monad.Exception.Throws</A
+></TD
+><TD
+></TD
+><TD
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="botbar"
+>Produced by <A HREF="http://www.haskell.org/haddock/"
+>Haddock</A
+> version 2.5.0</TD
+></TR
+></TABLE
+></BODY
+></HTML
+>
