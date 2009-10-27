@@ -17,7 +17,7 @@ module Control.Monad.Exception.Class (
        module Control.Monad.Exception.Throws,
        MonadThrow(..), MonadCatch(..),
        WrapException(..), Exception(..), SomeException(..),
-       showExceptionWithTrace
+       showExceptionWithTrace, wrapException
        ) where
 
 import Control.Monad
@@ -67,6 +67,11 @@ class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
 
 instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch
+
+wrapException ::
+     (MonadThrow e' m', MonadCatch e m m') =>
+     m a -> (e -> e') -> m' a
+wrapException m mkE = m `catch` (throw . mkE)
 
 {-| Given a list of source locations and an exception, @showExceptionWithTrace@ produces output of the form
 
