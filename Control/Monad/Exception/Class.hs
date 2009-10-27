@@ -45,6 +45,7 @@ import qualified Control.Exception.Extensible as Control.Exception
 import Control.Exception (Exception(..), SomeException)
 import qualified Control.Exception
 #endif
+import Data.Monoid
 import Data.Typeable
 import Text.PrettyPrint
 
