@@ -5,7 +5,7 @@ build-type: Simple
 license: PublicDomain
 author: Pepe Iborra
 maintainer: pepeiborra@gmail.com
-homepage: http://safe-tools.dsic.upv.es/mediawiki/index.php/Jose_Iborra/Papers/Exceptions
+homepage: http://pepeiborra.github.com/control-monad-exception
 description: 
   This package provides explicitly typed, checked exceptions as a library.
   .
