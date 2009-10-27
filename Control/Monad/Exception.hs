@@ -117,6 +117,7 @@ module Control.Monad.Exception (
 import Control.Applicative
 import Control.Monad.Identity
 import Control.Monad.Exception.Class
+import Control.Monad.Fix
 import Control.Monad.Trans
 import Control.Monad.Cont.Class
 import Control.Monad.RWS.Class
