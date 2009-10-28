@@ -2,9 +2,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverlappingInstances #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE NamedFieldPuns #-}
 
 {-|
 A Monad Transformer for explicitly typed checked exceptions.
@@ -87,7 +84,8 @@ missing a type annotation to pin down the type of the exception.
 >                                                 --  ChildException
 
 
- * Stack traces are only provided for explicitly annotated program points.
+ * Stack traces are provided via the @MonadLoc@ class, and only
+   for explicitly annotated program points.
    For now there is the TH macro 'withLocTH' to help with this.
    Eventually a preprocessor could be written to automatically insert calls
    to 'withLoc' at every do statement.
@@ -110,21 +108,20 @@ missing a type annotation to pin down the type of the exception.
 module Control.Monad.Exception (
     EM,  tryEM, runEM, runEMParanoid,
     EMT, tryEMT, runEMT, runEMTParanoid,
-    WithSrcLoc(..), withLocTH,
-    MonadZeroException(..),
-    module Control.Monad.Exception.Class ) where
+    throw, Control.Monad.Exception.catch,
+    showExceptionWithTrace,
+    MonadZeroException(..)) where
 
 import Control.Applicative
 import Control.Monad.Identity
-import Control.Monad.Exception.Class
+import Control.Monad.Exception.Catch
 import Control.Monad.Fix
 import Control.Monad.Trans
 import Control.Monad.Cont.Class
 import Control.Monad.RWS.Class
+import Control.Monad.Failure
 import Data.Monoid
 import Data.Typeable
-import Language.Haskell.TH.Syntax hiding (lift)
-import Text.PrettyPrint
 import Prelude hiding (catch)
 
 -- | A monad of explicitly typed, checked exceptions
@@ -190,14 +187,21 @@ instance Monad m => Applicative (EMT l m) where
   pure  = return
   (<*>) = ap
 
-instance (Exception e, Throws e l, Monad m) => MonadThrow e (EMT l m) where
-  throw = EMT . return . (\e -> Left ([],e)) . WrapException . toException
-instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
-  catchWithSrcLoc = catchEMT
-  catch emt h = catchEMT emt (\_ -> h)
+instance (Exception e, Throws e l, Monad m) => MonadFail e (EMT l m) where
+  failure = throw
 
-catchEMT :: (Exception e, Monad m) => EMT (Caught e l) m a -> ([String] -> e -> EMT l m a) -> EMT l m a
-catchEMT emt h = EMT $ do
+instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
+  catchWithSrcLoc = Control.Monad.Exception.catchWithSrcLoc
+  catch           = Control.Monad.Exception.catch
+
+throw :: (Throws e l, Monad m) => e -> EMT l m a
+throw = EMT . return . (\e -> Left ([],e)) . WrapException . toException
+
+catch :: (Exception e, Monad m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
+catch emt h = Control.Monad.Exception.catchWithSrcLoc emt (\_ -> h)
+
+catchWithSrcLoc :: (Exception e, Monad m) => EMT (Caught e l) m a -> ([String] -> e -> EMT l m a) -> EMT l m a
+catchWithSrcLoc emt h = EMT $ do
                 v <- unEMT emt
                 case v of
                   Right x -> return (Right x)
@@ -205,31 +209,11 @@ catchEMT emt h = EMT $ do
                                Nothing -> return (Left (trace,WrapException e))
                                Just e' -> unEMT (h trace e')
 
--- | 'withLocTH' is a convenient TH macro which expands to 'withLoc' @\<source location\>@
---   Usage:
---
---  > f x = $withLocTH $ do
-withLocTH :: Q Exp
-withLocTH = do
-  loc <- qLocation
-  let loc_msg = showLoc loc
-  [| withLoc loc_msg |]
- where
-   showLoc Loc{loc_module, loc_filename, loc_start} = render $
-                     {- text loc_package <> char '.' <> -}
-                     text loc_module <> parens (text loc_filename) <> colon <+> text (show loc_start)
 
--- | Generating stack traces for exceptions
-class WithSrcLoc a where
-  -- | 'withLoc' records the given source location in the exception stack trace
-  --   when used to wrap a EMT computation.
-  --
-  --   On any other monad or value, 'withLoc' is defined as the identity
-  withLoc :: String -> a -> a
+showExceptionWithTrace :: Exception e => [String] -> e -> String
+showExceptionWithTrace = showFailWithStackTrace
 
-instance WithSrcLoc a where withLoc _ = id
-
-instance Monad m => WithSrcLoc (EMT l m a) where
+instance Monad m => MonadLoc (EMT l m a) where
     withLoc loc (EMT emt) = EMT $ do
                      current <- emt
                      case current of

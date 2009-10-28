@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.4.8
+version: 0.5
 Cabal-Version:  >= 1.2.3
 build-type: Simple
 license: PublicDomain
@@ -76,7 +76,9 @@ Flag extensibleExceptions
   default: False
 
 Library
-  buildable: True
+  buildable: True 
+  build-depends: control-monad-failure
+
   if flag(extensibleExceptions)
     build-depends:
       extensible-exceptions >= 0.1 && <0.2,
@@ -99,9 +101,9 @@ Library
                EmptyDataDecls,
                DeriveDataTypeable,
                UndecidableInstances
-  build-depends: pretty, template-haskell
+
   exposed-modules:
-     Control.Monad.Exception.Class
+     Control.Monad.Exception.Catch
      Control.Monad.Exception.Throws
      Control.Monad.Exception
   ghc-options: -Wall -fno-warn-name-shadowing
