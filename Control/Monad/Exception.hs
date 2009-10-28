@@ -109,6 +109,7 @@ module Control.Monad.Exception (
     EM,  tryEM, runEM, runEMParanoid,
     EMT, tryEMT, runEMT, runEMTParanoid,
     throw, Control.Monad.Exception.catch,
+    wrapException,
     showExceptionWithTrace,
     MonadZeroException(..)) where
 
@@ -209,6 +210,9 @@ catchWithSrcLoc emt h = EMT $ do
                                Nothing -> return (Left (trace,WrapException e))
                                Just e' -> unEMT (h trace e')
 
+
+wrapException :: (Exception e, Throws e' l, Monad m) => EMT (Caught e l) m a -> (e -> e') -> EMT l m a
+wrapException m mkE = m `Control.Monad.Exception.catch` (throw . mkE)
 
 showExceptionWithTrace :: Exception e => [String] -> e -> String
 showExceptionWithTrace = showFailWithStackTrace
