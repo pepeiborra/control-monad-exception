@@ -149,7 +149,7 @@ runEMParanoid = runIdentity . runEMTParanoid
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
-newtype EMT l m a = EMT {unEMT :: m (Either ([String], WrapException l) a)}
+newtype EMT l m a = EMT {unEMT :: m (Either ([String], CheckedException l) a)}
 
 type AnyException = Caught SomeException
 
@@ -197,7 +197,7 @@ instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) w
   catch           = Control.Monad.Exception.catch
 
 throw :: (Throws e l, Monad m) => e -> EMT l m a
-throw = EMT . return . (\e -> Left ([],e)) . WrapException . toException
+throw = EMT . return . (\e -> Left ([],e)) . CheckedException . toException
 
 catch :: (Exception e, Monad m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
 catch emt h = Control.Monad.Exception.catchWithSrcLoc emt (\_ -> h)
@@ -207,8 +207,8 @@ catchWithSrcLoc emt h = EMT $ do
                 v <- unEMT emt
                 case v of
                   Right x -> return (Right x)
-                  Left (trace, WrapException e) -> case fromException e of
-                               Nothing -> return (Left (trace,WrapException e))
+                  Left (trace, CheckedException e) -> case fromException e of
+                               Nothing -> return (Left (trace,CheckedException e))
                                Just e' -> unEMT (h trace e')
 
 

@@ -7,14 +7,18 @@
 Defines the @Throws@ binary relationship between types.
 -}
 
-module Control.Monad.Exception.Throws (Throws, Caught, UncaughtException, NoExceptions, ParanoidMode) where
+module Control.Monad.Exception.Throws (
+    Throws, Caught,
+    CheckedException(..),
+    UncaughtException,
+    NoExceptions, ParanoidMode) where
 
 #if __GLASGOW_HASKELL__ < 610
 import Control.Exception.Extensible (Exception(..), SomeException)
 #else
 import Control.Exception (Exception(..), SomeException)
 #endif
-
+import Data.Typeable
 
 -- | A type level witness of a exception handler.
 data Caught e l
@@ -82,3 +86,9 @@ instance Private NoExceptions
 
 data ParanoidMode
 instance Private ParanoidMode
+
+-- Labelled SomeException
+-- ------------------------
+-- | @CheckedException@ adds a phantom type parameter @l@ to @SomeException@
+newtype CheckedException l = CheckedException {unwrapException::SomeException} deriving (Typeable)
+instance Show (CheckedException l) where show (CheckedException e) = show e

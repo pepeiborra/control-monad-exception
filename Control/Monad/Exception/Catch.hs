@@ -16,7 +16,7 @@ module Control.Monad.Exception.Catch (
        module Control.Monad,
        module Control.Monad.Exception.Throws,
        MonadCatch(..),
-       WrapException(..), Exception(..), SomeException(..),
+       Exception(..), SomeException(..),
        ) where
 
 import Control.Monad
@@ -57,12 +57,6 @@ class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
 
 instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch
-
--- Labelled SomeException
--- ------------------------
--- | @WrapException@ adds a phantom type parameter @l@ to @SomeException@
-newtype WrapException l = WrapException {unwrapException::SomeException} deriving (Typeable)
-instance Show (WrapException l) where show (WrapException e) = show e
 
 -- Throw and Catch instances for the Either and ErrorT monads
 -- -----------------------------------------------------------
