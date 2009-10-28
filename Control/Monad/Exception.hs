@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ExistentialQuantification, ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -112,9 +113,18 @@ module Control.Monad.Exception (
     finally, onException, bracket,
     wrapException,
     showExceptionWithTrace,
-    MonadZeroException(..)) where
+    MonadZeroException(..), UncheckedIOException(..),
+
+    -- reexports
+    Exception(..), SomeException, Typeable,
+    MonadFail(..),
+    Throws, Caught, UncaughtException,
+    withLoc, withLocTH,
+
+) where
 
 import Control.Applicative
+import qualified Control.Exception as CE
 import Control.Monad.Identity
 import Control.Monad.Exception.Catch
 import Control.Monad.Fix
@@ -262,8 +272,16 @@ instance MonadFix m => MonadFix (EMT l m) where
                                              Right r -> r
                                              _       -> error "empty fix argument"
 
-instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
-  liftIO = lift . liftIO
+data UncheckedIOException = forall e. Exception e => UncheckedIOException e deriving Typeable
+instance Show UncheckedIOException where show (UncheckedIOException e) = show e
+instance Exception UncheckedIOException
+instance UncaughtException UncheckedIOException
+
+instance (Throws UncheckedIOException l, MonadIO m) => MonadIO (EMT l m) where
+  liftIO m = EMT (liftIO m') where
+      m' = liftM Right m
+            `CE.catch`
+           \(e::SomeException) -> return (Left ([], CheckedException $ toException $ UncheckedIOException e))
 
 instance MonadCont m => MonadCont (EMT l m) where
   callCC f = EMT $ callCC $ \c -> unEMT (f (\a -> EMT $ c (Right a)))
