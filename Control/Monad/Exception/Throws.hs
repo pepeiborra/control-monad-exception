@@ -90,5 +90,5 @@ instance Private ParanoidMode
 -- Labelled SomeException
 -- ------------------------
 -- | @CheckedException@ adds a phantom type parameter @l@ to @SomeException@
-newtype CheckedException l = CheckedException {unwrapException::SomeException} deriving (Typeable)
+newtype CheckedException l = CheckedException {checkedException::SomeException} deriving (Typeable)
 instance Show (CheckedException l) where show (CheckedException e) = show e
