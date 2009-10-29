@@ -77,7 +77,7 @@ Flag extensibleExceptions
 
 Library
   buildable: True 
-  build-depends: control-monad-failure, monadloc
+  build-depends: control-monad-failure, monadloc, template-haskell
 
   if flag(extensibleExceptions)
     build-depends:

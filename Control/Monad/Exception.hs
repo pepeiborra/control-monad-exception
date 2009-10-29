@@ -3,6 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 {-|
 A Monad Transformer for explicitly typed checked exceptions.
@@ -112,6 +113,7 @@ module Control.Monad.Exception (
     throw, Control.Monad.Exception.catch,
     finally, onException, bracket,
     wrapException,
+    Try(..), tryLoc, NothingException(..),
     showExceptionWithTrace,
     MonadZeroException(..), UncheckedIOException(..),
 
@@ -135,6 +137,7 @@ import Control.Monad.Loc
 import Control.Monad.Failure
 import Data.Monoid
 import Data.Typeable
+import Language.Haskell.TH (Q, Exp)
 import Prelude hiding (catch)
 
 -- | A monad of explicitly typed, checked exceptions
@@ -284,6 +287,26 @@ instance (Throws UncheckedIOException l, MonadIO m) => MonadIO (EMT l m) where
       m' = liftM Right m
             `CE.catch`
            \(e::SomeException) -> return (Left ([], CheckedException $ toException $ UncheckedIOException e))
+
+
+-- -----------------------------------------------
+-- The Try class for absorbing other error monads
+-- -----------------------------------------------
+data NothingException = NothingException deriving (Typeable, Show)
+instance Exception NothingException
+
+class Try m l where try :: Monad m' => m a -> EMT l m' a
+instance Throws NothingException l => Try Maybe l where try = maybe (throw NothingException) return
+instance (Exception e, Throws e l) => Try (Either e) l where try = either throw return
+
+instance (Monad m, Try m l) => Try (EMT l m) l where try = join . fmap (EMT . return) .try . unEMT
+
+tryLoc :: Q Exp
+tryLoc = [| \m -> $withLocTH (try m) |]
+
+-- ------------------
+-- mtl boilerplate
+-- ------------------
 
 instance MonadCont m => MonadCont (EMT l m) where
   callCC f = EMT $ callCC $ \c -> unEMT (f (\a -> EMT $ c (Right a)))
