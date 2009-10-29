@@ -77,7 +77,7 @@ Flag extensibleExceptions
 
 Library
   buildable: True 
-  build-depends: control-monad-failure
+  build-depends: control-monad-failure, monadloc
 
   if flag(extensibleExceptions)
     build-depends:

@@ -131,6 +131,7 @@ import Control.Monad.Fix
 import Control.Monad.Trans
 import Control.Monad.Cont.Class
 import Control.Monad.RWS.Class
+import Control.Monad.Loc
 import Control.Monad.Failure
 import Data.Monoid
 import Data.Typeable
@@ -206,6 +207,13 @@ instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) w
   catchWithSrcLoc = Control.Monad.Exception.catchWithSrcLoc
   catch           = Control.Monad.Exception.catch
 
+instance Monad m => MonadLoc (EMT l m) where
+    withLoc loc (EMT emt) = EMT $ do
+                     current <- emt
+                     case current of
+                       (Left (tr, a)) -> return (Left (loc:tr, a))
+                       _              -> return current
+
 throw :: (Throws e l, Monad m) => e -> EMT l m a
 throw = EMT . return . (\e -> Left ([],e)) . CheckedException . toException
 
@@ -249,13 +257,6 @@ wrapException m mkE = m `Control.Monad.Exception.catch` (throw . mkE)
 
 showExceptionWithTrace :: Exception e => [String] -> e -> String
 showExceptionWithTrace = showFailWithStackTrace
-
-instance Monad m => MonadLoc (EMT l m a) where
-    withLoc loc (EMT emt) = EMT $ do
-                     current <- emt
-                     case current of
-                       (Left (tr, a)) -> return (Left (loc:tr, a))
-                       _              -> return current
 
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
