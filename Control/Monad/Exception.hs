@@ -211,7 +211,11 @@ instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) w
   catchWithSrcLoc = Control.Monad.Exception.catchWithSrcLoc
   catch           = Control.Monad.Exception.catch
 
+-- | EMT does not support getLoc. Locations are only actually recorded when
+--   propagating an exception, and are available only to the handler.
+--   The stack trace is not part of the state of a computation.
 instance Monad m => MonadLoc (EMT l m) where
+    getLocTrace = return []
     withLoc loc (EMT emt) = EMT $ do
                      current <- emt
                      case current of
@@ -260,7 +264,7 @@ wrapException :: (Exception e, Throws e' l, Monad m) => EMT (Caught e l) m a -> 
 wrapException m mkE = m `Control.Monad.Exception.catch` (throw . mkE)
 
 showExceptionWithTrace :: Exception e => [String] -> e -> String
-showExceptionWithTrace = showFailWithStackTrace
+showExceptionWithTrace = showWithLocTrace
 
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
