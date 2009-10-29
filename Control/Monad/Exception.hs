@@ -110,15 +110,14 @@ missing a type annotation to pin down the type of the exception.
 module Control.Monad.Exception (
     EM,  tryEM, runEM, runEMParanoid,
     EMT, tryEMT, runEMT, runEMTParanoid,
-    throw, Control.Monad.Exception.catch,
-    finally, onException, bracket,
-    wrapException,
+    throw, Control.Monad.Exception.catch, Control.Monad.Exception.catchWithSrcLoc,
+    finally, onException, bracket, wrapException,
     Try(..), tryLoc, NothingException(..),
     showExceptionWithTrace,
     MonadZeroException(..), UncheckedIOException(..),
 
     -- reexports
-    Exception(..), SomeException, Typeable,
+    Exception(..), SomeException(..), Typeable(..),
     MonadFail(..),
     Throws, Caught, UncaughtException,
     withLoc, withLocTH,
