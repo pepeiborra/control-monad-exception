@@ -114,7 +114,7 @@ module Control.Monad.Exception (
     finally, onException, bracket, wrapException,
     Try(..), tryLoc, NothingException(..),
     showExceptionWithTrace,
-    MonadZeroException(..), UncheckedIOException(..),
+    MonadZeroException(..),
 
     -- reexports
     Exception(..), SomeException(..), Typeable(..),
@@ -279,17 +279,13 @@ instance MonadFix m => MonadFix (EMT l m) where
   mfix f = EMT $ mfix $ \a -> unEMT $ f $ case a of
                                              Right r -> r
                                              _       -> error "empty fix argument"
+instance UncaughtException SomeException
 
-data UncheckedIOException = forall e. Exception e => UncheckedIOException e deriving Typeable
-instance Show UncheckedIOException where show (UncheckedIOException e) = show e
-instance Exception UncheckedIOException
-instance UncaughtException UncheckedIOException
-
-instance (Throws UncheckedIOException l, MonadIO m) => MonadIO (EMT l m) where
+instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
   liftIO m = EMT (liftIO m') where
       m' = liftM Right m
             `CE.catch`
-           \(e::SomeException) -> return (Left ([], CheckedException $ toException $ UncheckedIOException e))
+           \(e::SomeException) -> return (Left ([], CheckedException e))
 
 
 -- -----------------------------------------------
