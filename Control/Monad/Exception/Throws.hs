@@ -49,13 +49,13 @@ instance Private (Caught e l)
    'Throws' is not a transitive relation and every ancestor relation
    must be explicitly encoded.
 
->                                                 --   TopException
->                                                 --         |
->   instance Throws MidException   TopException   --         |
->                                                 --   MidException
->   instance Throws ChildException MidException   --         |
->   instance Throws ChildException TopException   --         |
->                                                 --  ChildException
+>                                                            --   TopException
+>                                                            --         |
+>   instance Throws MidException   (Caught TopException l)   --         |
+>                                                            --   MidException
+>   instance Throws ChildException (Caught MidException l)   --         |
+>   instance Throws ChildException (Caught TopException l)   --         |
+           >                                                 --  ChildException
 
 'SomeException' is automatically
    an ancestor of every other exception type.
