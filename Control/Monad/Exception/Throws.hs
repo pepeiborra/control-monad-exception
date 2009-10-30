@@ -75,11 +75,24 @@ instance Exception e => Throws e (Caught SomeException l)
 
 -- | Uncaught Exceptions model unchecked exceptions (a la RuntimeException in Java)
 --
---   In order to declare an unchecked exception @e@,
+--   In order to declare an unchecked exception @E@,
 --   all that is needed is to make @e@ an instance of @UncaughtException@
+--
+--  > instance UncaughtException E
+--
+--   Note that declaring an exception E as unchecked does not automatically
+--   turn its children as unchecked too. This is a shortcoming of the current encoding.
+{-
+--   If that is what you want, then
+--   declare E as unchecked using an instance of @Throws@:
+--
+--  > instance Throws E l
+--
+--  The shortcoming of this route is that runEMTParanoid won't be able to
+--  control exceptions declared unchecked this way.
+-}
 class Exception e => UncaughtException e
 instance UncaughtException e => Throws e NoExceptions
-
 
 data NoExceptions
 instance Private NoExceptions
