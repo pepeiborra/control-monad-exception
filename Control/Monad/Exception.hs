@@ -118,7 +118,7 @@ module Control.Monad.Exception (
 
     -- reexports
     Exception(..), SomeException(..), Typeable(..),
-    MonadFail(..),
+    MonadFailure(..),
     Throws, Caught, UncaughtException,
     withLoc, withLocTH,
 
@@ -203,7 +203,7 @@ instance Monad m => Applicative (EMT l m) where
   pure  = return
   (<*>) = ap
 
-instance (Exception e, Throws e l, Monad m) => MonadFail e (EMT l m) where
+instance (Exception e, Throws e l, Monad m) => MonadFailure e (EMT l m) where
   failure = throw
 
 instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
