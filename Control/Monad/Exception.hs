@@ -109,8 +109,8 @@ missing a type annotation to pin down the type of the exception.
 -}
 module Control.Monad.Exception (
     EM,  tryEM, runEM, runEMParanoid,
-    EMT, tryEMT, runEMT, runEMTParanoid,
-    throw, Control.Monad.Exception.catch, Control.Monad.Exception.catchWithSrcLoc,
+    EMT, CallTrace, tryEMT, runEMT, runEMTParanoid,
+    throw, rethrow, Control.Monad.Exception.catch, Control.Monad.Exception.catchWithSrcLoc,
     finally, onException, bracket, wrapException,
     Try(..), tryLoc, NothingException(..),
     showExceptionWithTrace,
@@ -162,7 +162,9 @@ runEMParanoid = runIdentity . runEMTParanoid
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
-newtype EMT l m a = EMT {unEMT :: m (Either ([String], CheckedException l) a)}
+type CallTrace = [String]
+
+newtype EMT l m a = EMT {unEMT :: m (Either (CallTrace, CheckedException l) a)}
 
 type AnyException = Caught SomeException
 
@@ -224,10 +226,14 @@ instance Monad m => MonadLoc (EMT l m) where
 throw :: (Throws e l, Monad m) => e -> EMT l m a
 throw = EMT . return . (\e -> Left ([],e)) . CheckedException . toException
 
+rethrow :: (Throws e l, Monad m) => CallTrace -> e -> EMT l m a
+rethrow callt = EMT . return . (\e -> Left (callt,e)) . CheckedException . toException
+
 catch :: (Exception e, Monad m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
 catch emt h = Control.Monad.Exception.catchWithSrcLoc emt (\_ -> h)
 
-catchWithSrcLoc :: (Exception e, Monad m) => EMT (Caught e l) m a -> ([String] -> e -> EMT l m a) -> EMT l m a
+
+catchWithSrcLoc :: (Exception e, Monad m) => EMT (Caught e l) m a -> (CallTrace -> e -> EMT l m a) -> EMT l m a
 catchWithSrcLoc emt h = EMT $ do
                 v <- unEMT emt
                 case v of
