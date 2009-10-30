@@ -5,7 +5,6 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverlappingInstances #-}
 
 
@@ -44,7 +43,6 @@ import Control.Exception (Exception(..), SomeException)
 import qualified Control.Exception
 #endif
 import Data.Monoid
-import Data.Typeable
 
 import Control.Monad.Exception.Throws
 
