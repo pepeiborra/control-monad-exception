@@ -72,6 +72,7 @@ instance Exception e => Throws e (Caught e l)
 --   .
 --   Capturing SomeException captures every possible exception
 instance Exception e => Throws e (Caught SomeException l)
+instance Throws SomeException (Caught SomeException l) -- Disambiguation instance
 
 -- | Uncaught Exceptions model unchecked exceptions (a la RuntimeException in Java)
 --
