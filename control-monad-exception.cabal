@@ -106,4 +106,4 @@ Library
      Control.Monad.Exception.Catch
      Control.Monad.Exception.Throws
      Control.Monad.Exception
-  ghc-options: -Wall -fno-warn-name-shadowing
+  ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-orphans
