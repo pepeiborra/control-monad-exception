@@ -114,7 +114,7 @@ module Control.Monad.Exception (
     finally, onException, bracket, wrapException,
     Try(..), tryLoc, NothingException(..),
     showExceptionWithTrace,
-    MonadZeroException(..),
+    FailException(..), MonadZeroException(..),
 
     -- reexports
     Exception(..), SomeException(..), Typeable(..),
@@ -159,9 +159,6 @@ runEM = runIdentity . runEMT
 runEMParanoid :: EM ParanoidMode a -> a
 runEMParanoid = runIdentity . runEMTParanoid
 
-data MonadZeroException = MonadZeroException deriving (Show, Typeable)
-instance Exception MonadZeroException
-
 type CallTrace = [String]
 
 newtype EMT l m a = EMT {unEMT :: m (Either (CallTrace, CheckedException l) a)}
@@ -195,6 +192,9 @@ instance Monad m => Functor (EMT l m) where
 
 instance Monad m => Monad (EMT l m) where
   return = EMT . return . Right
+
+  fail s = EMT $ return $ Left ([], CheckedException $ toException $ FailException s)
+
   emt >>= f = EMT $ do
                 v <- unEMT emt
                 case v of
@@ -308,6 +308,16 @@ instance (Monad m, Try m l) => Try (EMT l m) l where try = join . fmap (EMT . re
 
 tryLoc :: Q Exp
 tryLoc = [| \m -> $withLocTH (try m) |]
+
+-- -----------
+-- Exceptions
+-- -----------
+
+data FailException = FailException String deriving (Show, Typeable)
+instance Exception FailException
+
+data MonadZeroException = MonadZeroException deriving (Show, Typeable)
+instance Exception MonadZeroException
 
 -- ------------------
 -- mtl boilerplate
