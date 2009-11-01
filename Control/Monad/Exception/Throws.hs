@@ -2,6 +2,7 @@
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverlappingInstances, FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 {-|
 Defines the @Throws@ binary relationship between types.
@@ -55,11 +56,10 @@ instance Private (Caught e l)
 >                                                            --   MidException
 >   instance Throws ChildException (Caught MidException l)   --         |
 >   instance Throws ChildException (Caught TopException l)   --         |
-           >                                                 --  ChildException
+>                                                            --  ChildException
 
 'SomeException' is automatically
    an ancestor of every other exception type.
-
 
 -}
 

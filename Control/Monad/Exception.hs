@@ -3,7 +3,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 {-|
 A Monad Transformer for explicitly typed checked exceptions.
@@ -77,46 +76,61 @@ missing a type annotation to pin down the type of the exception.
  * If your sets of exceptions are hierarchical then you need to
    teach 'Throws' about the hierarchy.
 
->                                                 --   TopException
->                                                 --         |
->   instance Throws MidException   TopException   --         |
->                                                 --   MidException
->   instance Throws ChildException MidException   --         |
->   instance Throws ChildException TopException   --         |
->                                                 --  ChildException
+>                                                            --   TopException
+>                                                            --         |
+>   instance Throws MidException   (Caught TopException l)   --         |
+>                                                            --   MidException
+>   instance Throws ChildException (Caught MidException l)   --         |
+>   instance Throws ChildException (Caught TopException l)   --         |
+           >                                                 --  ChildException
 
 
- * Stack traces are provided via the @MonadLoc@ class, and only
-   for explicitly annotated program points.
-   For now there is the TH macro 'withLocTH' to help with this.
-   Eventually a preprocessor could be written to automatically insert calls
-   to 'withLoc' at every do statement.
+ * Stack traces are provided via the "MonadLoc" package.
+   All you need to do is add the following pragma at the top of your Haskell
+   source files and use do-notation:
 
->       f () = $withLocTH $ throw MyException
->       g a  = $withLocTH $ f a
+>  {-# OPTIONS_GHC -F -pgmF MonadLoc #-}
+
+   Only statements in do blocks appear in the stack trace.
+
+* Example:
+
+>       f () = do throw MyException
+>       g a  = do f a
 >
->       main = runEMT $ $withLocTH $ do
->       g () `catchWithSrcLoc` \loc (e::MyException) -> lift(putStrLn$ showExceptionWithTrace loc e)
+>       main = runEMT $ do
+>                g () `catchWithSrcLoc`
+>                        \loc (e::MyException) -> lift(putStrLn$ showExceptionWithTrace loc e)
 
 >        -- Running main produces the output:
 
 >       *Main> main
 >       MyException
->        in Main(example.hs): (12,6)
->           Main(example.hs): (11,7)
-
+>        in f, Main(example.hs): (1,6)
+>           g, Main(example.hs): (2,6)
+>           main, Main(example.hs): (5,9)
+>           main, Main(example.hs): (4,16)
 
 -}
 module Control.Monad.Exception (
+
+-- * The EM monad
     EM,  tryEM, runEM, runEMParanoid,
+
+-- * The EMT monad transformer
     EMT, CallTrace, tryEMT, runEMT, runEMTParanoid,
+
+-- * Exception primitives
     throw, rethrow, Control.Monad.Exception.catch, Control.Monad.Exception.catchWithSrcLoc,
     finally, onException, bracket, wrapException,
-    Try(..), tryLoc, NothingException(..),
+
     showExceptionWithTrace,
     FailException(..), MonadZeroException(..),
 
-    -- reexports
+-- * The Try class for absorbing other error monads
+    Try(..), NothingException(..),
+
+-- * Reexports
     Exception(..), SomeException(..), Typeable(..),
     MonadFailure(..),
     Throws, Caught, UncaughtException,
@@ -136,12 +150,11 @@ import Control.Monad.Loc
 import Control.Monad.Failure
 import Data.Monoid
 import Data.Typeable
-import Language.Haskell.TH (Q, Exp)
+import Text.PrettyPrint
 import Prelude hiding (catch)
 
 -- | A monad of explicitly typed, checked exceptions
 type EM l = EMT l Identity
-
 
 mapLeft :: (a -> b) -> Either a r -> Either b r
 mapLeft f (Left x)  = Left (f x)
@@ -212,27 +225,27 @@ instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) w
   catchWithSrcLoc = Control.Monad.Exception.catchWithSrcLoc
   catch           = Control.Monad.Exception.catch
 
--- | EMT does not support getLoc. Locations are only actually recorded when
---   propagating an exception, and are available only to the handler.
---   The stack trace is not part of the state of a computation.
 instance Monad m => MonadLoc (EMT l m) where
-    getLocTrace = return []
     withLoc loc (EMT emt) = EMT $ do
                      current <- emt
                      case current of
                        (Left (tr, a)) -> return (Left (loc:tr, a))
                        _              -> return current
 
-throw :: (Throws e l, Monad m) => e -> EMT l m a
+-- | The throw primitive
+throw :: (Exception e, Throws e l, Monad m) => e -> EMT l m a
 throw = EMT . return . (\e -> Left ([],e)) . CheckedException . toException
 
+-- | Rethrow an exception keeping the call trace
 rethrow :: (Throws e l, Monad m) => CallTrace -> e -> EMT l m a
 rethrow callt = EMT . return . (\e -> Left (callt,e)) . CheckedException . toException
 
+
+-- | The catch primitive
 catch :: (Exception e, Monad m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
 catch emt h = Control.Monad.Exception.catchWithSrcLoc emt (\_ -> h)
 
-
+-- | Like 'Control.Monad.Exception.catch' but makes the call trace available
 catchWithSrcLoc :: (Exception e, Monad m) => EMT (Caught e l) m a -> (CallTrace -> e -> EMT l m a) -> EMT l m a
 catchWithSrcLoc emt h = EMT $ do
                 v <- unEMT emt
@@ -265,11 +278,16 @@ bracket :: Monad m => EMT l m a        -- ^ acquire resource
                    -> EMT l m c
 bracket acquire release run = do { k <- acquire; run k `finally` release k }
 
+-- | Capture an exception e, wrap it, and rethrow.
+--   Keeps the original monadic call trace.
 wrapException :: (Exception e, Throws e' l, Monad m) => EMT (Caught e l) m a -> (e -> e') -> EMT l m a
-wrapException m mkE = m `Control.Monad.Exception.catch` (throw . mkE)
+wrapException m mkE = m `Control.Monad.Exception.catchWithSrcLoc` \loc e -> rethrow loc (mkE e)
 
 showExceptionWithTrace :: Exception e => [String] -> e -> String
-showExceptionWithTrace = showWithLocTrace
+showExceptionWithTrace [] e = show e
+showExceptionWithTrace trace e = render$
+             text (show e) $$
+             text " in" <+> (vcat (map text $ reverse trace))
 
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
@@ -306,16 +324,15 @@ instance (Exception e, Throws e l) => Try (Either e) l where try = either throw 
 
 instance (Monad m, Try m l) => Try (EMT l m) l where try = join . fmap (EMT . return) .try . unEMT
 
-tryLoc :: Q Exp
-tryLoc = [| \m -> $withLocTH (try m) |]
-
 -- -----------
 -- Exceptions
 -- -----------
 
+-- | @FailException@ is thrown by Monad 'fail'
 data FailException = FailException String deriving (Show, Typeable)
 instance Exception FailException
 
+-- | @MonadZeroException@ is thrown by MonadPlus 'mzero'
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
