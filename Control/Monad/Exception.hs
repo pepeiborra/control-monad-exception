@@ -280,8 +280,8 @@ bracket acquire release run = do { k <- acquire; run k `finally` release k }
 
 -- | Capture an exception e, wrap it, and rethrow.
 --   Keeps the original monadic call trace.
-wrapException :: (Exception e, Throws e' l, Monad m) => EMT (Caught e l) m a -> (e -> e') -> EMT l m a
-wrapException m mkE = m `Control.Monad.Exception.catchWithSrcLoc` \loc e -> rethrow loc (mkE e)
+wrapException :: (Exception e, Throws e' l, Monad m) => (e -> e') -> EMT (Caught e l) m a -> EMT l m a
+wrapException mkE m = m `Control.Monad.Exception.catchWithSrcLoc` \loc e -> rethrow loc (mkE e)
 
 showExceptionWithTrace :: Exception e => [String] -> e -> String
 showExceptionWithTrace [] e = show e
