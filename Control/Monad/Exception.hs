@@ -132,7 +132,7 @@ module Control.Monad.Exception (
 
 -- * Reexports
     Exception(..), SomeException(..), Typeable(..),
-    MonadFailure(..),
+    MonadFailure(..), WrapFailure(..),
     Throws, Caught, UncaughtException,
     withLoc, withLocTH,
 
@@ -220,6 +220,15 @@ instance Monad m => Applicative (EMT l m) where
 
 instance (Exception e, Throws e l, Monad m) => MonadFailure e (EMT l m) where
   failure = throw
+
+instance (Exception e, Throws e l, Monad m) => WrapFailure e (EMT l m) where
+  wrapFailure mkE m
+      = EMT $ do
+          v <- unEMT m
+          case v of
+            Right _ -> return v
+            Left (loc, CheckedException (SomeException e))
+                    -> return $ Left (loc, CheckedException $ toException $ mkE e)
 
 instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
   catchWithSrcLoc = Control.Monad.Exception.catchWithSrcLoc
