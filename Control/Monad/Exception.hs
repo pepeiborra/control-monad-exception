@@ -3,6 +3,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE CPP #-}
 
 {-|
 A Monad Transformer for explicitly typed checked exceptions.
@@ -114,11 +115,11 @@ missing a type annotation to pin down the type of the exception.
 -}
 module Control.Monad.Exception (
 
--- * The EM monad
-    EM,  tryEM, runEM, runEMParanoid,
+--  The EM monad
+--    EM,  tryEM, runEM, runEMParanoid,
 
 -- * The EMT monad transformer
-    EMT, CallTrace, tryEMT, runEMT, runEMTParanoid,
+    EMT(..), CallTrace, tryEMT, runEMT, runEMTParanoid, AnyException,
 
 -- * Exception primitives
     throw, rethrow, Control.Monad.Exception.catch, Control.Monad.Exception.catchWithSrcLoc,
@@ -139,38 +140,13 @@ module Control.Monad.Exception (
 ) where
 
 import Control.Applicative
-import qualified Control.Exception as CE
-import Control.Monad.Identity
 import Control.Monad.Exception.Catch
-import Control.Monad.Fix
-import Control.Monad.Trans
-import Control.Monad.Cont.Class
-import Control.Monad.RWS.Class
 import Control.Monad.Loc
-import Control.Monad.Failure
-import Data.Monoid
+import Control.Monad.Failure.Class
+import Control.Monad.Fix
 import Data.Typeable
 import Text.PrettyPrint
 import Prelude hiding (catch)
-
--- | A monad of explicitly typed, checked exceptions
-type EM l = EMT l Identity
-
-mapLeft :: (a -> b) -> Either a r -> Either b r
-mapLeft f (Left x)  = Left (f x)
-mapLeft _ (Right x) = Right x
-
--- | Run a computation explicitly handling exceptions
-tryEM :: EM (AnyException l) a -> Either SomeException a
-tryEM = runIdentity . tryEMT
-
--- | Run a safe computation
-runEM :: EM NoExceptions a -> a
-runEM = runIdentity . runEMT
-
--- | Run a computation checking even unchecked (@UncaughtExceptions@) exceptions
-runEMParanoid :: EM ParanoidMode a -> a
-runEMParanoid = runIdentity . runEMTParanoid
 
 type CallTrace = [String]
 
@@ -241,6 +217,11 @@ instance Monad m => MonadLoc (EMT l m) where
                        (Left (tr, a)) -> return (Left (loc:tr, a))
                        _              -> return current
 
+instance MonadFix m => MonadFix (EMT l m) where
+  mfix f = EMT $ mfix $ \a -> unEMT $ f $ case a of
+                                             Right r -> r
+                                             _       -> error "empty fix argument"
+
 -- | The throw primitive
 throw :: (Exception e, Throws e l, Monad m) => e -> EMT l m a
 throw = EMT . return . (\e -> Left ([],e)) . CheckedException . toException
@@ -297,29 +278,9 @@ showExceptionWithTrace [] e = show e
 showExceptionWithTrace trace e = render$
              text (show e) $$
              text " in" <+> (vcat (map text $ reverse trace))
-
-instance (Throws MonadZeroException l) => MonadPlus (EM l) where
-  mzero = throw MonadZeroException
-  mplus emt1 emt2 = EMT$ do
-                     v1 <- unEMT emt1
-                     case v1 of
-                       Left _  -> unEMT emt2
-                       Right _ -> return v1
-
-instance MonadTrans (EMT l) where lift = EMT . liftM Right
-
-instance MonadFix m => MonadFix (EMT l m) where
-  mfix f = EMT $ mfix $ \a -> unEMT $ f $ case a of
-                                             Right r -> r
-                                             _       -> error "empty fix argument"
+{-
+-}
 instance UncaughtException SomeException
-
-instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
-  liftIO m = EMT (liftIO m') where
-      m' = liftM Right m
-            `CE.catch`
-           \(e::SomeException) -> return (Left ([], CheckedException e))
-
 
 -- -----------------------------------------------
 -- The Try class for absorbing other error monads
@@ -345,30 +306,9 @@ instance Exception FailException
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
--- ------------------
--- mtl boilerplate
--- ------------------
 
-instance MonadCont m => MonadCont (EMT l m) where
-  callCC f = EMT $ callCC $ \c -> unEMT (f (\a -> EMT $ c (Right a)))
+-- other
 
-instance MonadReader r m => MonadReader r (EMT l m) where
-  ask = lift ask
-  local f m = EMT (local f (unEMT m))
-
-instance MonadState s m => MonadState s (EMT l m) where
-  get = lift get
-  put = lift . put
-
-instance (Monoid w, MonadWriter w m) => MonadWriter w (EMT l m) where
-  tell   = lift . tell
-  listen m = EMT $ do
-               (res, w) <- listen (unEMT m)
-               return (fmap (\x -> (x,w)) res)
-  pass m   = EMT $ pass $ do
-               a <- unEMT m
-               case a of
-                 Left  l     -> return (Left l, id)
-                 Right (r,f) -> return (Right r, f)
-
-instance (Monoid w, MonadRWS r w s m) => MonadRWS r w s (EMT l m)
+mapLeft :: (a -> b) -> Either a r -> Either b r
+mapLeft f (Left x)  = Left (f x)
+mapLeft _ (Right x) = Right x

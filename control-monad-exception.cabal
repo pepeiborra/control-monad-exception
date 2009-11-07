@@ -69,8 +69,12 @@ tested-with: GHC ==6.8.2
 tested-with: GHC ==6.10.2
 tested-with: GHC ==6.10.3
 
-Flag transformers
-  description: Use transformers and monads-fd instead of mtl
+Flag mtl
+  description: Provide mtl instances
+  default: True 
+
+Flag monadsfd
+  description: Provide monads-fd instances
   default: True 
 
 Flag extensibleExceptions
@@ -89,13 +93,15 @@ Library
     build-depends:
       base >= 4 && < 5
 
-  if flag(transformers)
-    cpp-options: -DTRANSFORMERS
-    build-depends:
-      transformers >= 0.0.1 && <0.2,
-      monads-fd >= 0.0 && <0.1
-  else
+  if flag(mtl)
+    cpp-options: -DMTL
     build-depends: mtl
+    exposed-modules : Control.Monad.Exception.Mtl
+
+  if flag(monadsfd)
+    cpp-options: -DMONADSFD
+    build-depends: transformers, monads-fd
+    exposed-modules : Control.Monad.Exception.MonadsFD
 
   extensions:  MultiParamTypeClasses, 
                FunctionalDependencies,
