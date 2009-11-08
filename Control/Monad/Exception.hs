@@ -212,7 +212,7 @@ instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) w
 
 instance Monad m => MonadLoc (EMT l m) where
     withLoc loc (EMT emt) = EMT $ do
-                     current <- emt
+                     current <- withLoc loc emt
                      case current of
                        (Left (tr, a)) -> return (Left (loc:tr, a))
                        _              -> return current
