@@ -10,7 +10,6 @@ import Control.Monad.Exception
 import Control.Monad.Exception.Catch as Catch
 import Control.Monad.Exception.Throws
 import "mtl" Control.Monad.Identity
-import "mtl" Control.Monad.Trans
 import "mtl" Control.Monad.Cont.Class
 import "mtl" Control.Monad.Error
 import "mtl" Control.Monad.List
@@ -81,6 +80,8 @@ instance (Monoid w, MonadRWS r w s m) => MonadRWS r w s (EMT l m)
 
 -- MonadCatch Instances
 -- -------------------------------------------------------------------------
+
+-- Commented out due to the problem of duplicated Monad instances for Either
 -- instance (Error e) => MonadCatch e (Either e) (Either e) where catch m h = either h Right m
 instance (Error e, Monad m) => MonadCatch e (ErrorT e m) (ErrorT e m) where catch = catchError
 
