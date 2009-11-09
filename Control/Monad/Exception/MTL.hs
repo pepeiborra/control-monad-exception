@@ -4,7 +4,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 -- | 'EMT' liftings for the classes in the Monad Transformer Library
-module Control.Monad.Exception.Mtl (module Control.Monad.Exception, Control.Monad.Exception.catch) where
+module Control.Monad.Exception.MTL (module Control.Monad.Exception, Control.Monad.Exception.catch) where
 
 import qualified Control.Exception as CE
 

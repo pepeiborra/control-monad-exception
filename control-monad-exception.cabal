@@ -96,7 +96,7 @@ Library
   if flag(mtl)
     cpp-options: -DMTL
     build-depends: mtl
-    exposed-modules : Control.Monad.Exception.Mtl
+    exposed-modules : Control.Monad.Exception.MTL
 
   if flag(monadsfd)
     cpp-options: -DMONADSFD
