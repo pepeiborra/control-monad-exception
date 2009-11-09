@@ -40,9 +40,11 @@ description:
   .
   In addition to explicitly typed exceptions his package provides:
   .
-    * Support for explicitly documented, unchecked exceptions (with 'tryEM').
+    * Support for explicitly documented, unchecked exceptions (via 'Control.Monad.Exception.tryEMT').
   .
-    * Support for selective unchecked exceptions (with 'UncaughtException').
+    * Support for selective unchecked exceptions (via 'Control.Monad.Exception.UncaughtException').
+  .
+    * Support for selective unexplicit exceptions.
   .
     * Support for exception call traces via 'Control.Monad.Loc.MonadLoc'. /Example:/
   .
