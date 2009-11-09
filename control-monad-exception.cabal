@@ -113,7 +113,8 @@ Library
                UndecidableInstances
 
   exposed-modules:
+     Control.Monad.Exception
+     Control.Monad.Exception.Base
      Control.Monad.Exception.Catch
      Control.Monad.Exception.Throws
-     Control.Monad.Exception
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-orphans

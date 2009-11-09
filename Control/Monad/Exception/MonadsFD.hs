@@ -1,11 +1,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE PackageImports #-}
-module Control.Monad.Exception.MonadsFD (module Control.Monad.Exception.MonadsFD
-                                        ,module Control.Monad.Exception
+
+-- | 'EMT' liftings for the classes in the monads-fd package
+module Control.Monad.Exception.MonadsFD (module Control.Monad.Exception, Control.Monad.Exception.catch
                                         ) where
 
 import qualified Control.Exception as CE
+
 import qualified Control.Monad.Exception
 import Control.Monad.Exception hiding (catch)
 import Control.Monad.Exception.Catch
@@ -15,7 +17,6 @@ import "monads-fd" Control.Monad.RWS.Class
 
 import Control.Monad
 import "transformers" Control.Monad.Trans
-import "transformers" Control.Monad.Identity
 
 import Control.Monad.Trans.Error
 import Control.Monad.Trans.List
@@ -26,21 +27,6 @@ import Control.Monad.Trans.RWS (RWST(..))
 
 import Data.Monoid
 import Prelude hiding (catch)
-
--- | A monad of explicitly typed, checked exceptions
-type EM l = EMT l Identity
-
--- | Run a computation explicitly handling exceptions
-tryEM :: EM (AnyException l) a -> Either SomeException a
-tryEM = runIdentity . tryEMT
-
--- | Run a safe computation
-runEM :: EM NoExceptions a -> a
-runEM = runIdentity . runEMT
-
--- | Run a computation checking even unchecked (@UncaughtExceptions@) exceptions
-runEMParanoid :: EM ParanoidMode a -> a
-runEMParanoid = runIdentity . runEMTParanoid
 
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException

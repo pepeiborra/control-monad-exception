@@ -2,14 +2,16 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE PackageImports #-}
 {-# LANGUAGE UndecidableInstances #-}
-module Control.Monad.Exception.Mtl (module Control.Monad.Exception.Mtl
-                                   ,module Control.Monad.Exception) where
+
+-- | 'EMT' liftings for the classes in the Monad Transformer Library
+module Control.Monad.Exception.Mtl (module Control.Monad.Exception, Control.Monad.Exception.catch) where
 
 import qualified Control.Exception as CE
-import Control.Monad.Exception
+
+import qualified Control.Monad.Exception
+import Control.Monad.Exception hiding (catch)
 import Control.Monad.Exception.Catch as Catch
 import Control.Monad.Exception.Throws
-import "mtl" Control.Monad.Identity
 import "mtl" Control.Monad.Cont.Class
 import "mtl" Control.Monad.Error
 import "mtl" Control.Monad.List
@@ -19,21 +21,6 @@ import "mtl" Control.Monad.Writer
 import "mtl" Control.Monad.RWS
 import Data.Monoid
 import Prelude hiding (catch)
-
--- | A monad of explicitly typed, checked exceptions
-type EM l = EMT l Identity
-
--- | Run a computation explicitly handling exceptions
-tryEM :: EM (AnyException l) a -> Either SomeException a
-tryEM = runIdentity . tryEMT
-
--- | Run a safe computation
-runEM :: EM NoExceptions a -> a
-runEM = runIdentity . runEMT
-
--- | Run a computation checking even unchecked (@UncaughtExceptions@) exceptions
-runEMParanoid :: EM ParanoidMode a -> a
-runEMParanoid = runIdentity . runEMTParanoid
 
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
