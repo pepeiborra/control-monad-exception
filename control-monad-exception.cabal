@@ -67,8 +67,6 @@ description:
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads
 stability: experimental
-tested-with: GHC ==6.8.2
-tested-with: GHC ==6.10.2
 tested-with: GHC ==6.10.3
 
 Flag mtl
