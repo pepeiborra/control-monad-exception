@@ -1,6 +1,6 @@
 name: control-monad-exception
 version: 0.5.1
-Cabal-Version:  >= 1.2.3
+Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
 author: Pepe Iborra
@@ -118,3 +118,9 @@ Library
      Control.Monad.Exception.Catch
      Control.Monad.Exception.Throws
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-orphans
+
+
+
+source-repository head
+  type:     git
+  location: git://github.com/pepeiborra/control-monad-exception.git
