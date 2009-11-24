@@ -272,8 +272,8 @@ mplusDefault :: Monad m => EMT l m a -> EMT l m a -> EMT l m a
 mplusDefault emt1 emt2 = EMT$ do
                      v1 <- unEMT emt1
                      case v1 of
-                       Left _  -> unEMT emt2
-                       Right _ -> return v1
+                       Left (_,CheckedException e) | Just MonadZeroException <- fromException e -> unEMT emt2
+                       _  -> return v1
 -- other
 
 mapLeft :: (a -> b) -> Either a r -> Either b r
