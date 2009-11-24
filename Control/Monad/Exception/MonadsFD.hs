@@ -28,15 +28,6 @@ import Control.Monad.Trans.RWS (RWST(..))
 import Data.Monoid
 import Prelude hiding (catch)
 
-instance (Throws MonadZeroException l) => MonadPlus (EM l) where
-  mzero = throw MonadZeroException
-  mplus emt1 emt2 = EMT$ do
-                     v1 <- unEMT emt1
-                     case v1 of
-                       Left _  -> unEMT emt2
-                       Right _ -> return v1
-
-
 instance MonadTrans (EMT l) where lift = EMT . liftM Right
 
 instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where

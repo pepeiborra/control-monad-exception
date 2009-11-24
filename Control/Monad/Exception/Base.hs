@@ -234,6 +234,14 @@ instance Monad Identity where
   return = Identity
   Identity a >>= f = f a
 
+instance (Throws MonadZeroException l) => MonadPlus (EM l) where
+  mzero = throw MonadZeroException
+  mplus emt1 emt2 = EMT$ do
+                     v1 <- unEMT emt1
+                     case v1 of
+                       Left _  -> unEMT emt2
+                       Right _ -> return v1
+
 -- -----------------------------------------------
 -- The Try class for absorbing other error monads
 -- -----------------------------------------------
