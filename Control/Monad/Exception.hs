@@ -73,7 +73,7 @@ module Control.Monad.Exception (
     finally, onException, bracket, wrapException,
 
     showExceptionWithTrace,
-    FailException(..), MonadZeroException(..),
+    FailException(..), MonadZeroException(..), mplusDefault,
 
 -- * Reexports
     Exception(..), SomeException(..), Typeable(..),
