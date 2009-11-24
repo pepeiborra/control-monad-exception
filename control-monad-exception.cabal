@@ -44,8 +44,6 @@ description:
   .
     * Support for selective unchecked exceptions (via 'Control.Monad.Exception.UncaughtException').
   .
-    * Support for selective unexplicit exceptions.
-  .
     * Support for exception call traces via 'Control.Monad.Loc.MonadLoc'. /Example:/
   .
   >

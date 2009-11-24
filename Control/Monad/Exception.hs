@@ -114,13 +114,6 @@ An exception @E@ can be declared as unchecked by making @E@ an instance of
 Also, 'tryEMT' allows you to run a computation regardless of the exceptions it throws.
 -}
 
-{- $unexplicit
-An exception @E@ can be made unexplicit: @E@ will not appear in the list
-   of exceptions. To do so include the following instance in your code:
-
->  instance Throws E l
-
--}
 
 {- $stacktraces
  Stack traces are provided via the "MonadLoc" package.

@@ -24,12 +24,9 @@ data Caught e l
 {-| @Throws@ is a type level binary relationship
     used to model a list of exceptions.
 
-    There are two cases in which the user may want
-    to add further instances to @Throws@.
-
-     1. To encode subtyping.
-
-     2. To declare an exception as unexplicit (a programming error).
+    There is only one case in which the user must
+    add further instances to @Throws@, and that is
+    to encode the hierarchy of exceptions.
 
     [/Subtyping/]
      As there is no way to automatically infer
@@ -39,7 +36,7 @@ data Caught e l
      For example,
      the following instance encodes that @MyFileNotFoundException@ is
      a subexception of @MyIOException@ :
-     
+
  > instance Throws MyFileNotFoundException (Caught MyIOException l)
 
     'Throws' is not a transitive relation and every ancestor relation
@@ -56,11 +53,6 @@ data Caught e l
      'SomeException' is automatically
       an ancestor of every other exception type.
 
-    [/Programming Errors/]
-     In order to declare an exception @E@ as a programming error, which should
-     not be explicit nor checked, use a 'Throws' instance as follows:
-
->    instance Throws e l
 -}
 
 class Exception e => Throws e l
