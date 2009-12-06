@@ -250,6 +250,7 @@ instance Exception FailException
 data MonadZeroException = MonadZeroException deriving (Show, Typeable)
 instance Exception MonadZeroException
 
+-- | This function may be used as a value for 'mplus' in 'MonadPlus'
 mplusDefault :: Monad m => EMT l m a -> EMT l m a -> EMT l m a
 mplusDefault emt1 emt2 = EMT$ do
                      v1 <- unEMT emt1
