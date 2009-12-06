@@ -48,7 +48,7 @@ module Control.Monad.Exception.Base where
 import Control.Applicative
 import Control.Monad.Exception.Catch
 import Control.Monad.Loc
-import Control.Monad.Failure.Class
+import Control.Failure
 import Control.Monad.Fix
 import Data.Typeable
 import Text.PrettyPrint
@@ -104,10 +104,10 @@ instance Monad m => Applicative (EMT l m) where
   pure  = return
   (<*>) = ap
 
-instance (Exception e, Throws e l, Monad m) => MonadFailure e (EMT l m) where
+instance (Exception e, Throws e l, Monad m, Failure e m) => Failure e (EMT l m) where
   failure = throw
 
-instance (Exception e, Throws e l, Monad m) => WrapFailure e (EMT l m) where
+instance (Exception e, Throws e l, Failure e m, Monad m) => WrapFailure e (EMT l m) where
   wrapFailure mkE m
       = EMT $ do
           v <- unEMT m
@@ -237,24 +237,6 @@ instance Monad Identity where
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
   mplus = mplusDefault
-
--- -----------------------------------------------
--- The Try class for absorbing other error monads
--- -----------------------------------------------
-data NothingException = NothingException deriving (Typeable, Show)
-instance Exception NothingException
-
-class Try m l where
-   {- | The purpose of 'try' is to combine 'EMT' with other failure handling data types.
-        'try' accepts a failing computation and turns it into an 'EMT' computation.
-         The instances provided allow you to 'try' on 'Maybe' and 'Either' computations.
-   -}
-   try :: Monad m' => m a -> EMT l m' a
-
-instance Throws NothingException l => Try Maybe l where try = maybe (throw NothingException) return
-instance (Exception e, Throws e l) => Try (Either e) l where try = either throw return
-
-instance (Monad m, Try m l) => Try (EMT l m) l where try = join . fmap (EMT . return) .try . unEMT
 
 -- -----------
 -- Exceptions

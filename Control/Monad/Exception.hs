@@ -65,9 +65,6 @@ module Control.Monad.Exception (
 -- ** The Throws type class
    Throws, Caught,
 
--- ** The Try type class for absorbing other failure types
-    Try(..), NothingException(..),
-
 -- * Exception primitives
       throw, rethrow, Control.Monad.Exception.Base.catch, Control.Monad.Exception.Base.catchWithSrcLoc,
     finally, onException, bracket, wrapException,
@@ -77,7 +74,8 @@ module Control.Monad.Exception (
 
 -- * Reexports
     Exception(..), SomeException(..), Typeable(..),
-    MonadFailure(..), WrapFailure(..),
+    Try(..), NothingException(..),
+    Failure(..), MonadFailure(..), WrapFailure(..),
     MonadLoc(..), withLocTH
 ) where
 
@@ -85,7 +83,7 @@ import Control.Exception (Exception(..), SomeException(..))
 import Control.Monad.Exception.Base
 import Control.Monad.Exception.Catch
 import Control.Monad.Exception.Throws
-import Control.Monad.Failure
+import Control.Failure
 import Control.Monad.Loc
 import Data.Typeable
 

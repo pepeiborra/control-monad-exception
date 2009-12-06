@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.6.1
+version: 0.8.0
 Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
@@ -81,7 +81,9 @@ Flag extensibleExceptions
 
 Library
   buildable: True 
-  build-depends: control-monad-failure, monadloc, pretty
+  build-depends: failure
+               , monadloc
+               , pretty
 
   if flag(extensibleExceptions)
     build-depends:

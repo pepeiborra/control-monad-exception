@@ -9,7 +9,7 @@ module Control.Monad.Exception.MTL (module Control.Monad.Exception, Control.Mona
 import qualified Control.Exception as CE
 
 import qualified Control.Monad.Exception
-import Control.Monad.Exception hiding (catch)
+import Control.Monad.Exception hiding (catch, Error)
 import Control.Monad.Exception.Catch as Catch
 import Control.Monad.Exception.Throws
 import "mtl" Control.Monad.Cont.Class
