@@ -75,11 +75,10 @@ module Control.Monad.Exception (
 -- * Reexports
     Exception(..), SomeException(..), Typeable(..),
     Try(..), NothingException(..),
-    Failure(..), MonadFailure(..), WrapFailure(..),
+    Failure(..), MonadFailure, WrapFailure(..),
     MonadLoc(..), withLocTH
 ) where
 
-import Control.Exception (Exception(..), SomeException(..))
 import Control.Monad.Exception.Base
 import Control.Monad.Exception.Catch
 import Control.Monad.Exception.Throws
