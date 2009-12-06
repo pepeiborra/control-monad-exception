@@ -58,9 +58,7 @@ instance (Monoid w, MonadRWS r w s m) => MonadRWS r w s (EMT l m)
 
 -- MonadCatch Instances
 -- -------------------------------------------------------------------------
-
--- Commented out due to the problem of duplicated Monad instances for Either
--- instance (Error e) => MonadCatch e (Either e) (Either e) where catch m h = either h Right m
+instance (Error e) => MonadCatch e (Either e) (Either e) where catch m h = either h Right m
 instance (Error e, Monad m) => MonadCatch e (ErrorT e m) (ErrorT e m) where catch = catchError
 
 instance MonadCatch e m m' => MonadCatch e (ListT m) (ListT m') where catch (ListT m) h = ListT (Catch.catch m (runListT . h))

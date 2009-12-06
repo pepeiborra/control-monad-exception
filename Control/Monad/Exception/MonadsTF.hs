@@ -1,11 +1,12 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleContexts, FlexibleInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE PackageImports #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 -- | 'EMT' liftings for the classes in the monads-fd package
-module Control.Monad.Exception.MonadsFD (module Control.Monad.Exception, Control.Monad.Exception.catch
+module Control.Monad.Exception.MonadsTF (module Control.Monad.Exception, Control.Monad.Exception.catch
                                         ) where
 
 import qualified Control.Exception as CE
@@ -14,8 +15,8 @@ import qualified Control.Monad.Exception
 import Control.Monad.Exception hiding (catch, Error)
 import Control.Monad.Exception.Catch
 import Control.Monad.Exception.Throws
-import "monads-fd" Control.Monad.Cont.Class
-import "monads-fd" Control.Monad.RWS.Class
+import "monads-tf" Control.Monad.Cont.Class
+import "monads-tf" Control.Monad.RWS.Class
 
 import Control.Monad
 import "transformers" Control.Monad.Trans
@@ -41,15 +42,18 @@ instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
 instance MonadCont m => MonadCont (EMT l m) where
   callCC f = EMT $ callCC $ \c -> unEMT (f (\a -> EMT $ c (Right a)))
 
-instance MonadReader r m => MonadReader r (EMT l m) where
+instance MonadReader m => MonadReader (EMT l m) where
+  type EnvType (EMT l m) = EnvType m
   ask = lift ask
   local f m = EMT (local f (unEMT m))
 
-instance MonadState s m => MonadState s (EMT l m) where
+instance MonadState m => MonadState (EMT l m) where
+  type StateType (EMT l m) = StateType m
   get = lift get
   put = lift . put
 
-instance (Monoid w, MonadWriter w m) => MonadWriter w (EMT l m) where
+instance (MonadWriter m) => MonadWriter (EMT l m) where
+  type WriterType (EMT l m) = WriterType m
   tell   = lift . tell
   listen m = EMT $ do
                (res, w) <- listen (unEMT m)
@@ -60,7 +64,7 @@ instance (Monoid w, MonadWriter w m) => MonadWriter w (EMT l m) where
                  Left  l     -> return (Left l, id)
                  Right (r,f) -> return (Right r, f)
 
-instance (Monoid w, MonadRWS r w s m) => MonadRWS r w s (EMT l m)
+instance (MonadRWS m) => MonadRWS (EMT l m)
 
 
 -- MonadCatch Instances

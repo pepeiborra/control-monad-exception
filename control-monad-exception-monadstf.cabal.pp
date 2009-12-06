@@ -1,4 +1,4 @@
-name: control-monad-exception
+name: control-monad-exception-monadstf
 version: 0.8.0
 Cabal-Version:  >= 1.6
 build-type: Simple
@@ -67,38 +67,25 @@ category: Control, Monads
 stability: experimental
 tested-with: GHC ==6.10.3
 
-Flag extensibleExceptions
-  description: Use extensible-exception package
-  default: False
-
 Library
   buildable: True 
-  build-depends: failure
-               , monadloc
-               , pretty
+  build-depends: base > 4 && < 5
+               , control-monad-exception == 0.8.0
+               , transformers >= 0.1.0
+               , monads-tf    >= 0.0.0.1
 
-  if flag(extensibleExceptions)
-    build-depends:
-      extensible-exceptions >= 0.1 && <0.2,
-      base >= 3.0 && <4
-  else
-    build-depends:
-      base >= 4 && < 5
-
-  extensions:  MultiParamTypeClasses,
-               ScopedTypeVariables,
+  extensions:  ScopedTypeVariables, 
+               PackageImports,
+               MultiParamTypeClasses,
+               TypeFamilies,
                FlexibleContexts,
                FlexibleInstances,
-               TypeSynonymInstances,
-               EmptyDataDecls,
-               DeriveDataTypeable,
-               PatternGuards
+               UndecidableInstances
 
   exposed-modules:
-     Control.Monad.Exception
-     Control.Monad.Exception.Base
-     Control.Monad.Exception.Catch
-     Control.Monad.Exception.Throws
+     Control.Monad.Exception.MonadsTF
+
+  hs-source-dirs: src-monadstf
 
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-orphans
 
