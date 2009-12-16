@@ -1,5 +1,5 @@
 name: control-monad-exception-mtl
-version: 0.8.0
+version: 0.8.0.1
 Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
@@ -63,7 +63,7 @@ description:
   >       main, Main(example.hs): (4,16)
 
 synopsis: Explicitly typed, checked exceptions with stack traces
-category: Control, Monads
+category: Control, Monads, Failure
 stability: experimental
 tested-with: GHC ==6.10.3
 
