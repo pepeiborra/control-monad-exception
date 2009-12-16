@@ -103,7 +103,7 @@ instance Monad m => Applicative (EMT l m) where
   pure  = return
   (<*>) = ap
 
-instance (Exception e, Throws e l, Monad m, Failure e m) => Failure e (EMT l m) where
+instance (Exception e, Throws e l, Monad m) => Failure e (EMT l m) where
   failure = throw
 
 instance (Exception e, Throws e l, Failure e m, Monad m) => WrapFailure e (EMT l m) where
