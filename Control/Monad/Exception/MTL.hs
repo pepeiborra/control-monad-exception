@@ -11,7 +11,6 @@ import qualified Control.Exception as CE
 import qualified Control.Monad.Exception
 import Control.Monad.Exception hiding (catch, Error)
 import Control.Monad.Exception.Catch as Catch
-import Control.Monad.Exception.Throws
 import "mtl" Control.Monad.Cont.Class
 import "mtl" Control.Monad.Error
 import "mtl" Control.Monad.List
@@ -19,7 +18,6 @@ import "mtl" Control.Monad.Reader
 import "mtl" Control.Monad.State
 import "mtl" Control.Monad.Writer
 import "mtl" Control.Monad.RWS
-import Data.Monoid
 import Prelude hiding (catch)
 
 instance MonadTrans (EMT l) where lift = EMT . liftM Right

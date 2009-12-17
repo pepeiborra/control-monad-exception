@@ -159,7 +159,7 @@ catchWithSrcLoc emt h = EMT $ do
 --   If the first computation rises an exception, the second computation is run
 --   and then the exception is rethrown.
 finally :: Monad m => EMT l m a -> EMT l m b -> EMT l m a
-finally m sequel = do { v <- m `onException` sequel; sequel; return v}
+finally m sequel = do { v <- m `onException` sequel; _ <- sequel; return v}
 
 
 -- | Like finally, but performs the second computation only when the first one
@@ -168,14 +168,14 @@ onException :: Monad m => EMT l m a -> EMT l m b -> EMT l m a
 onException (EMT m) (EMT sequel) = EMT $ do
                                      ev <- m
                                      case ev of
-                                       Left{}  -> do { sequel; return ev}
+                                       Left{}  -> do { _ <- sequel; return ev}
                                        Right{} -> return ev
 
 bracket :: Monad m => EMT l m a        -- ^ acquire resource
                    -> (a -> EMT l m b) -- ^ release resource
                    -> (a -> EMT l m c) -- ^ computation
                    -> EMT l m c
-bracket acquire release run = do { k <- acquire; run k `finally` release k }
+bracket acquire release run = do { k <- acquire; run k `finally` (release k) }
 
 -- | Capture an exception e, wrap it, and rethrow.
 --   Keeps the original monadic call trace.

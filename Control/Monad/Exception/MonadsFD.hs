@@ -13,11 +13,8 @@ import qualified Control.Exception as CE
 import qualified Control.Monad.Exception
 import Control.Monad.Exception hiding (catch, Error)
 import Control.Monad.Exception.Catch
-import Control.Monad.Exception.Throws
 import "monads-fd" Control.Monad.Cont.Class
 import "monads-fd" Control.Monad.RWS.Class
-
-import Control.Monad
 import "transformers" Control.Monad.Trans
 
 import Control.Monad.Trans.Error
