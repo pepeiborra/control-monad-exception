@@ -43,12 +43,9 @@ module Control.Monad.Exception (
 -- ** Hierarchies of Exceptions
 -- $hierarchies
 
--- ** Unchecked and unexplicit exceptions
+-- ** Unchecked exceptions
 -- *** Unchecked exceptions
 -- $unchecked
-
--- *** Unexplicit exceptions
--- $unexplicit
 
 -- ** Stack Traces
 -- $stacktraces
