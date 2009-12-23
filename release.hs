@@ -25,19 +25,24 @@ descriptors = ["control-monad-exception.cabal"
 
 releaseDir = "release"
 
+data Action = Release | Build | Script deriving Eq
+
 main = do
-  args <- getArgs
-  real <- case args of
-              [] -> return False
-              ["really", "release"] -> return True
+  args   <- getArgs
+  action <- case args of
+              [] -> return Script
+              ["build"] -> return Build
+              ["really", "release"] -> return Release
               _ -> do
-                putStrLn "USAGE: release (really release)"
+                putStrLn "USAGE: release [build|really release]"
                 exitWith ExitSuccess
 
+  let real = action /= Script
 -- Auxiliary functions
-  let cmd = if real
-              then \cmd -> do {putStrLn cmd; system cmd}
-              else \cmd -> do {putStrLn cmd; return ExitSuccess}
+  let cmd = case action of
+            Release-> \cmd -> do {putStrLn cmd; system cmd}
+            Build  -> \cmd -> do {putStrLn cmd; system cmd}
+            Script -> \cmd -> do {putStrLn cmd; return ExitSuccess}
       rename f f' = do
          putStrLn ("mv " ++ f ++ " " ++ f')
          when real $ renameFile f f'
@@ -66,20 +71,21 @@ main = do
          return (mapM (uncurry BS.writeFile) (zip currentDescriptors currentDescriptorsContents))
 
 -- | Build, test, package and store for release.
---   Returns an action which does the actual uploading to Hackage.
-      cabal_upload d = do
-        version <- showVersion . pkgVersion . package . packageDescription
-               <$> readPackageDescription Verbosity.normal d
+      cabal_dist d = do
         _ <- cmd "cabal clean"
         guardOk (d ++ " failed to build correctly")   =<< cmd "cabal install"
         guardOk (d ++ " failed to test correctly")    =<< cmd "cabal test"
-        guardOk (d ++ " failed to package correctly") =<< cmd "cabal sdist"
-        let packagedFilePath = dropExtension d ++ "-" ++ version <.> "tar.gz"
-        copy ("dist" </> packagedFilePath) (releaseDir </> packagedFilePath)
-        return $ do
-          guardOk (d ++ " failed to upload correctly to Hackage") =<<
-            cmd ("cabal upload " ++ releaseDir </> packagedFilePath)
-          rm (releaseDir </> packagedFilePath)
+        guardOk (d ++ " failed to package correctly") =<< cmd ("cabal sdist --builddir=" ++ releaseDir)
+
+-- | Upload a package already stored in the release dir to Hackage
+      cabal_upload d = do
+           version <- showVersion . pkgVersion . package . packageDescription
+                  <$> readPackageDescription Verbosity.normal d
+           let packagedFilePath = (dropExtension.dropExtension) d ++ "-" ++ version <.> "tar.gz"
+
+           guardOk (packagedFilePath ++ " failed to upload correctly to Hackage") =<<
+               cmd ("cabal upload " ++ releaseDir </> packagedFilePath)
+           rm (releaseDir </> packagedFilePath)
 
 -- THE ACTUAL SCRIPT
 
@@ -92,17 +98,17 @@ main = do
       if not exists
         then return(return ())
         else case ext of
-        ".cabal" -> cabal_upload d <* rm d
+        ".cabal" -> pure (cabal_upload d) <* cabal_dist d <* rm d
         ".pp" -> do
            let d' = dropExtension d
            copy d d'
-           action <- cabal_upload d'
-           rm d'
-           return action
+           cabal_dist d'
+           return $ cabal_upload d
 
-    released <- length `liftM` sequence uploadActions
-    putStrLn ("Release of " ++ show released ++ " packages completed.")
-    rmDir releaseDir
+    unless (action == Build) $ do
+      released <- length `liftM` sequence uploadActions
+      when (action == Release) $ putStrLn ("Release of " ++ show released ++ " packages completed.")
+      rmDir releaseDir
 
 ignore _ = return ()
 
