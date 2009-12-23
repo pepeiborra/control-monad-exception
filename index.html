@@ -20,7 +20,7 @@
 		h1 .small { font-size: 0.4em; }
 		h1 a { text-decoration: none }
 		h2 { font-size: 1.5em; color: #7897fe; }
-    h3 { text-align: center; color: #7897fe; }
+    h3 { font-size: 1em; }
     a { color: #7897fe; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
@@ -48,6 +48,7 @@
 <p>Pepe Iborra (pepeiborra@gmail.com)<br/>      </p>
 
 
+
     <h2>Install</h2>
     <p>
       You can obtain this package from <a href="http://hackage.haskell.org/package/control-monad-exception">Hackage</a>.
@@ -60,15 +61,16 @@ cabal install control-monad-exception
     <h2>Documentation</h2>
    <ul>
    <li> Haddock documentation available at <a href="http://hackage.haskell.org/package/control-monad-exception">Hackage</a> 
-     or <a href="http://pepeiborra.github.com/control-monad-exception/doc/html/control-monad-exception/index.html">GitHub</a>.
+     or <a href="http://pepeiborra.github.com/control-monad-exception/doc/html/index.html">GitHub</a>.
    </li>
     <li>There is a paper explaining the ideas behind this library:
      <ul><li>
     <p><b>Explicitly typed exceptions for Haskell</b>(<a href="http://www.dsic.upv.es/~jiborra/papers/explicitexceptions.pdf">PDF</a>). Jose Iborra, PADL'10.
-    </li>
+    </li> </ul> </li>
+    <li>Blog post: <a href="http://pepeiborra.posterous.com/control-monad-exception-and-the-long-type-sig">control-monad-exception and the long type signatures myth</a></li>
     <li><a href="http://www.dsic.upv.es/~jiborra/papers/slidesTPF09.pdf">Slides</a> presented at TPF'09, San Sebastian, Spain.
+    <li> Marc Weber's <a href="http://github.com/MarcWeber/monad-failure-examples">monad-failure-examples</a> project contains example code.
     </li></ul>
-    </li> </ul>
     <h2>Contribute</h2>
 
     <p> The source code for this library is available on <a href="http://github.com/pepeiborra/control-monad-exception">GitHub</a> and
@@ -78,9 +80,26 @@ cabal install control-monad-exception
     </p>
       
     You can also create or vote on issues or fork this project.
-    I will be happy to merge patches fixing issues or extending the library.    
-  </div>
 
+
+ <h2>Changelog</h2>
+    <h3>0.8.0.3 (23-December-2009)</h3>
+      <ul><li>Inconsistencies in the documentation and the API fixed thanks to Marc Weber</li></ul>
+    <h3>0.8.0.2 (17-December-2009)</h3>
+      <ul>
+	<li>Fixed a bug in the Failure instance for EMT</li>
+	<li>Purged compile-time warnings</li>
+	<li>Updates to the documentation</li>
+	</ul>
+    <h3>0.8.0.1 (06-December-2009)</h3>
+    <ul>
+      <li>Included the package in the Failure category</li>
+      </ul>
+    <h3>0.8.0 (06-December-2009)</h3>
+    <ul>
+      <li>Major update for the second installment of the failure framework</li>
+      </ul>
+  </div>
       <div class="footer">
       get the source code on GitHub : <a href="http://github.com/pepeiborra/control-monad-exception">pepeiborra/control-monad-exception</a>
     </div>

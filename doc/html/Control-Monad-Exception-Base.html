@@ -1,0 +1,1961 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>Control.Monad.Exception.Base</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
+></SCRIPT
+><SCRIPT TYPE="text/javascript"
+>window.onload = function () {setSynopsis("mini_Control-Monad-Exception-Base.html")};</SCRIPT
+></HEAD
+><BODY
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="topbar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
+></TD
+><TD CLASS="title"
+>control-monad-exception-0.8.0.3: Explicitly typed, checked exceptions with stack traces</TD
+><TD CLASS="topbut"
+><A HREF="index.html"
+>Contents</A
+></TD
+><TD CLASS="topbut"
+><A HREF="doc-index.html"
+>Index</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="modulebar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><FONT SIZE="6"
+>Control.Monad.Exception.Base</FONT
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Description</TD
+></TR
+><TR
+><TD CLASS="doc"
+><P
+>A Monad Transformer for explicitly typed checked exceptions.
+</P
+><P
+>The exceptions thrown by a computation are inferred by the typechecker
+and appear in the type signature of the computation as <TT
+><A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+></TT
+> constraints.
+</P
+><P
+>Exceptions are defined using the extensible exceptions framework of Marlow (documented in <A HREF="Control-Exception.html"
+>Control.Exception</A
+>):
+</P
+><UL
+><LI
+> <EM
+>An Extensible Dynamically-Typed Hierarchy of Exceptions</EM
+>, by Simon Marlow, in <EM
+>Haskell '06</EM
+>.
+</LI
+></UL
+><P
+><EM
+>Example</EM
+>
+</P
+><PRE
+> data DivideByZero = DivideByZero deriving (Show, Typeable)
+ data SumOverflow  = SumOverflow  deriving (Show, Typeable)
+</PRE
+><PRE
+> instance Exception DivideByZero
+ instance Exception SumOverflow
+</PRE
+><PRE
+> data Expr = Add Expr Expr | Div Expr Expr | Val Double
+</PRE
+><PRE
+> eval (Val x)     = return x
+ eval (Add a1 a2) = do
+    v1 &lt;- eval a1
+    v2 &lt;- eval a2
+    let sum = v1 + v2
+    if sum &lt; v1 || sum &lt; v2 then throw SumOverflow else return sum
+ eval (Div a1 a2) = do
+    v1 &lt;- eval a1
+    v2 &lt;- eval a2
+    if v2 == 0 then throw DivideByZero else return (v1 / v2)
+</PRE
+><P
+>GHCi infers the following types
+</P
+><PRE
+> eval                                             :: (Throws DivideByZero l, Throws SumOverflow l) =&gt; Expr -&gt; EM l Double
+ eval `catch` \ (e::DivideByZero) -&gt; return (-1)  :: Throws SumOverflow l =&gt; Expr -&gt; EM l Double
+ runEM(eval `catch` \ (e::SomeException) -&gt; return (-1))
+                                                  :: Expr -&gt; Double
+</PRE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3ACallTrace"
+>CallTrace</A
+> = [<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>newtype</SPAN
+>  <A HREF="#t%3AEMT"
+>EMT</A
+> l m a = <A HREF="#v%3AEMT"
+>EMT</A
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AunEMT"
+>unEMT</A
+> :: m (<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+>, <A HREF="Control-Monad-Exception-Throws.html#t%3ACheckedException"
+>CheckedException</A
+> l) a)</TD
+></TR
+></TABLE
+>}</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtryEMT"
+>tryEMT</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> m a -&gt; m (<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+> a)</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtryEMTWithLoc"
+>tryEMTWithLoc</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> m a -&gt; m (<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+>, <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+>) a)</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3ArunEMT_gen"
+>runEMT_gen</A
+> :: <SPAN CLASS="keyword"
+>forall</SPAN
+> l m a. <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AAnyException"
+>AnyException</A
+> </TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3ANoExceptions"
+>NoExceptions</A
+> </TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AParanoidMode"
+>ParanoidMode</A
+> </TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3ArunEMT"
+>runEMT</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3ANoExceptions"
+>NoExceptions</A
+> m a -&gt; m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3ArunEMTParanoid"
+>runEMTParanoid</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AParanoidMode"
+>ParanoidMode</A
+> m a -&gt; m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Athrow"
+>throw</A
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e l, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Arethrow"
+>rethrow</A
+> :: (<A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e l, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+> -&gt; e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Acatch"
+>catch</A
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> (<A HREF="Control-Monad-Exception-Throws.html#t%3ACaught"
+>Caught</A
+> e l) m a -&gt; (e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a) -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AcatchWithSrcLoc"
+>catchWithSrcLoc</A
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> (<A HREF="Control-Monad-Exception-Throws.html#t%3ACaught"
+>Caught</A
+> e l) m a -&gt; (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+> -&gt; e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a) -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Afinally"
+>finally</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m b -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AonException"
+>onException</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m b -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Abracket"
+>bracket</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; (a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m b) -&gt; (a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m c) -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m c</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AwrapException"
+>wrapException</A
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e' l, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; (e -&gt; e') -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> (<A HREF="Control-Monad-Exception-Throws.html#t%3ACaught"
+>Caught</A
+> e l) m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AshowExceptionWithTrace"
+>showExceptionWithTrace</A
+> :: <A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e =&gt; [<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+>] -&gt; e -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>class</SPAN
+> <A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e =&gt; <A HREF="#t%3AUncaughtException"
+>UncaughtException</A
+> e </TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3AEM"
+>EM</A
+> l = <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l <A HREF="Control-Monad-Exception-Base.html#t%3AIdentity"
+>Identity</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtryEM"
+>tryEM</A
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> a -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+> a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtryEMWithLoc"
+>tryEMWithLoc</A
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> a -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+>, <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+>) a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3ArunEM"
+>runEM</A
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3ANoExceptions"
+>NoExceptions</A
+> a -&gt; a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3ArunEMParanoid"
+>runEMParanoid</A
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AParanoidMode"
+>ParanoidMode</A
+> a -&gt; a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>newtype</SPAN
+>  <A HREF="#t%3AIdentity"
+>Identity</A
+> a = <A HREF="#v%3AIdentity"
+>Identity</A
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3ArunIdentity"
+>runIdentity</A
+> :: a</TD
+></TR
+></TABLE
+>}</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AFailException"
+>FailException</A
+>  = <A HREF="#v%3AFailException"
+>FailException</A
+> <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AMonadZeroException"
+>MonadZeroException</A
+>  = <A HREF="#v%3AMonadZeroException"
+>MonadZeroException</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AmplusDefault"
+>mplusDefault</A
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AmapLeft"
+>mapLeft</A
+> ::  (a -&gt; b) -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> a r -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> b r</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Documentation</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:CallTrace"
+><A NAME="t%3ACallTrace"
+></A
+></A
+><B
+>CallTrace</B
+> = [<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>newtype</SPAN
+>  <A NAME="t:EMT"
+><A NAME="t%3AEMT"
+></A
+></A
+><B
+>EMT</B
+> l m a </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+>A Monad Transformer for explicitly typed checked exceptions.
+</TD
+></TR
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="5" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:EMT"
+><A NAME="v%3AEMT"
+></A
+></A
+><B
+>EMT</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="body" COLSPAN="2"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:unEMT"
+><A NAME="v%3AunEMT"
+></A
+></A
+><B
+>unEMT</B
+> :: m (<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+>, <A HREF="Control-Monad-Exception-Throws.html#t%3ACheckedException"
+>CheckedException</A
+> l) a)</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:EMT')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:EMT" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>(<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e l, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception.html#t%3AFailure"
+>Failure</A
+> e (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+><TR
+><TD CLASS="decl"
+>(<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e l, <A HREF="Control-Monad-Exception.html#t%3AFailure"
+>Failure</A
+> e m, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception.html#t%3AWrapFailure"
+>WrapFailure</A
+> e (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+><TR
+><TD CLASS="decl"
+>(<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception-Catch.html#t%3AMonadCatch"
+>MonadCatch</A
+> e (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> (<A HREF="Control-Monad-Exception-Throws.html#t%3ACaught"
+>Caught</A
+> e l) m) (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AFunctor"
+>Functor</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad-Fix.html#t%3AMonadFix"
+>MonadFix</A
+> m =&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad-Fix.html#t%3AMonadFix"
+>MonadFix</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Applicative.html#t%3AApplicative"
+>Applicative</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception.html#t%3AMonadLoc"
+>MonadLoc</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m)</TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:tryEMT"
+><A NAME="v%3AtryEMT"
+></A
+></A
+><B
+>tryEMT</B
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> m a -&gt; m (<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+> a)</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Run a computation explicitly handling exceptions
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:tryEMTWithLoc"
+><A NAME="v%3AtryEMTWithLoc"
+></A
+></A
+><B
+>tryEMTWithLoc</B
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> m a -&gt; m (<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+>, <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+>) a)</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:runEMT_gen"
+><A NAME="v%3ArunEMT_gen"
+></A
+></A
+><B
+>runEMT_gen</B
+> :: <SPAN CLASS="keyword"
+>forall</SPAN
+> l m a. <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; m a</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:AnyException"
+><A NAME="t%3AAnyException"
+></A
+></A
+><B
+>AnyException</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:AnyException')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:AnyException" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e =&gt; <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:NoExceptions"
+><A NAME="t%3ANoExceptions"
+></A
+></A
+><B
+>NoExceptions</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:NoExceptions')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:NoExceptions" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#t%3AUncaughtException"
+>UncaughtException</A
+> e =&gt; <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e <A HREF="Control-Monad-Exception-Base.html#t%3ANoExceptions"
+>NoExceptions</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:ParanoidMode"
+><A NAME="t%3AParanoidMode"
+></A
+></A
+><B
+>ParanoidMode</B
+>  </TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:runEMT"
+><A NAME="v%3ArunEMT"
+></A
+></A
+><B
+>runEMT</B
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3ANoExceptions"
+>NoExceptions</A
+> m a -&gt; m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Run a safe computation
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:runEMTParanoid"
+><A NAME="v%3ArunEMTParanoid"
+></A
+></A
+><B
+>runEMTParanoid</B
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AParanoidMode"
+>ParanoidMode</A
+> m a -&gt; m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Run a safe computation checking even unchecked (<TT
+><A HREF="Control-Monad-Exception-Base.html#t%3AUncaughtException"
+>UncaughtException</A
+></TT
+>) exceptions
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:throw"
+><A NAME="v%3Athrow"
+></A
+></A
+><B
+>throw</B
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e l, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>The throw primitive
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:rethrow"
+><A NAME="v%3Arethrow"
+></A
+></A
+><B
+>rethrow</B
+> :: (<A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e l, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+> -&gt; e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Rethrow an exception keeping the call trace
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:catch"
+><A NAME="v%3Acatch"
+></A
+></A
+><B
+>catch</B
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> (<A HREF="Control-Monad-Exception-Throws.html#t%3ACaught"
+>Caught</A
+> e l) m a -&gt; (e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a) -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>The catch primitive
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:catchWithSrcLoc"
+><A NAME="v%3AcatchWithSrcLoc"
+></A
+></A
+><B
+>catchWithSrcLoc</B
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> (<A HREF="Control-Monad-Exception-Throws.html#t%3ACaught"
+>Caught</A
+> e l) m a -&gt; (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+> -&gt; e -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a) -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Like <TT
+><A HREF="Control-Monad-Exception-Base.html#v%3Acatch"
+>catch</A
+></TT
+> but makes the call trace available
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:finally"
+><A NAME="v%3Afinally"
+></A
+></A
+><B
+>finally</B
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m b -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Sequence two computations discarding the result of the second one.
+   If the first computation rises an exception, the second computation is run
+   and then the exception is rethrown.
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:onException"
+><A NAME="v%3AonException"
+></A
+></A
+><B
+>onException</B
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m b -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Like finally, but performs the second computation only when the first one
+   rises an exception
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:bracket"
+><A NAME="v%3Abracket"
+></A
+></A
+><B
+>bracket</B
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+>:: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+>=&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+><TD CLASS="rdoc"
+>release resource
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+>-&gt; a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m b</TD
+><TD CLASS="rdoc"
+>computation
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+>-&gt; a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m c</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+>-&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m c</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:wrapException"
+><A NAME="v%3AwrapException"
+></A
+></A
+><B
+>wrapException</B
+> :: (<A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e, <A HREF="Control-Monad-Exception-Throws.html#t%3AThrows"
+>Throws</A
+> e' l, <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m) =&gt; (e -&gt; e') -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> (<A HREF="Control-Monad-Exception-Throws.html#t%3ACaught"
+>Caught</A
+> e l) m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Capture an exception e, wrap it, and rethrow.
+   Keeps the original monadic call trace.
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:showExceptionWithTrace"
+><A NAME="v%3AshowExceptionWithTrace"
+></A
+></A
+><B
+>showExceptionWithTrace</B
+> :: <A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e =&gt; [<A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+>] -&gt; e -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>class</SPAN
+> <A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> e =&gt; <A NAME="t:UncaughtException"
+><A NAME="t%3AUncaughtException"
+></A
+></A
+><B
+>UncaughtException</B
+> e </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+><P
+>UncaughtException models unchecked exceptions
+</P
+><P
+>In order to declare an unchecked exception <TT
+>E</TT
+>,
+   all that is needed is to make <TT
+>e</TT
+> an instance of <TT
+><A HREF="Control-Monad-Exception-Base.html#t%3AUncaughtException"
+>UncaughtException</A
+></TT
+>
+</P
+><PRE
+> instance UncaughtException E
+</PRE
+><P
+>Note that declaring an exception E as unchecked does not automatically
+   turn its children unchecked too. This is a shortcoming of the current encoding.
+</P
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:UncaughtException')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:UncaughtException" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#t%3AUncaughtException"
+>UncaughtException</A
+> <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:EM"
+><A NAME="t%3AEM"
+></A
+></A
+><B
+>EM</B
+> l = <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l <A HREF="Control-Monad-Exception-Base.html#t%3AIdentity"
+>Identity</A
+></TD
+></TR
+><TR
+><TD CLASS="doc"
+>A monad of explicitly typed, checked exceptions
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:tryEM"
+><A NAME="v%3AtryEM"
+></A
+></A
+><B
+>tryEM</B
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> a -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+> a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Run a computation explicitly handling exceptions
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:tryEMWithLoc"
+><A NAME="v%3AtryEMWithLoc"
+></A
+></A
+><B
+>tryEMWithLoc</B
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>AnyException</A
+> a -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>CallTrace</A
+>, <A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>SomeException</A
+>) a</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:runEM"
+><A NAME="v%3ArunEM"
+></A
+></A
+><B
+>runEM</B
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3ANoExceptions"
+>NoExceptions</A
+> a -&gt; a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Run a safe computation
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:runEMParanoid"
+><A NAME="v%3ArunEMParanoid"
+></A
+></A
+><B
+>runEMParanoid</B
+> ::  <A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>EM</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AParanoidMode"
+>ParanoidMode</A
+> a -&gt; a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Run a computation checking even unchecked (<TT
+>UncaughtExceptions</TT
+>) exceptions
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>newtype</SPAN
+>  <A NAME="t:Identity"
+><A NAME="t%3AIdentity"
+></A
+></A
+><B
+>Identity</B
+> a </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="5" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:Identity"
+><A NAME="v%3AIdentity"
+></A
+></A
+><B
+>Identity</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="body" COLSPAN="2"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:runIdentity"
+><A NAME="v%3ArunIdentity"
+></A
+></A
+><B
+>runIdentity</B
+> :: a</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Identity')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Identity" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AIdentity"
+>Identity</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Eq.html#t%3AEq"
+>Eq</A
+> a =&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Eq.html#t%3AEq"
+>Eq</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AIdentity"
+>Identity</A
+> a)</TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Ord.html#t%3AOrd"
+>Ord</A
+> a =&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Ord.html#t%3AOrd"
+>Ord</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AIdentity"
+>Identity</A
+> a)</TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Text-Show.html#t%3AShow"
+>Show</A
+> a =&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Text-Show.html#t%3AShow"
+>Show</A
+> (<A HREF="Control-Monad-Exception-Base.html#t%3AIdentity"
+>Identity</A
+> a)</TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:FailException"
+><A NAME="t%3AFailException"
+></A
+></A
+><B
+>FailException</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+><TT
+>FailException</TT
+> is thrown by Monad <TT
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#v%3Afail"
+>fail</A
+></TT
+>
+</TD
+></TR
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:FailException"
+><A NAME="v%3AFailException"
+></A
+></A
+><B
+>FailException</B
+> <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Char.html#t%3AString"
+>String</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:FailException')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:FailException" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Text-Show.html#t%3AShow"
+>Show</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AFailException"
+>FailException</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="Control-Monad-Exception.html#t%3ATypeable"
+>Typeable</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AFailException"
+>FailException</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AFailException"
+>FailException</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:MonadZeroException"
+><A NAME="t%3AMonadZeroException"
+></A
+></A
+><B
+>MonadZeroException</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+><TT
+>MonadZeroException</TT
+> is thrown by MonadPlus <TT
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#v%3Amzero"
+>mzero</A
+></TT
+>
+</TD
+></TR
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:MonadZeroException"
+><A NAME="v%3AMonadZeroException"
+></A
+></A
+><B
+>MonadZeroException</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:MonadZeroException')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:MonadZeroException" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Text-Show.html#t%3AShow"
+>Show</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AMonadZeroException"
+>MonadZeroException</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="Control-Monad-Exception.html#t%3ATypeable"
+>Typeable</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AMonadZeroException"
+>MonadZeroException</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Exception</A
+> <A HREF="Control-Monad-Exception-Base.html#t%3AMonadZeroException"
+>MonadZeroException</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:mplusDefault"
+><A NAME="v%3AmplusDefault"
+></A
+></A
+><B
+>mplusDefault</B
+> :: <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonad"
+>Monad</A
+> m =&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a -&gt; <A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>EMT</A
+> l m a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>This function may be used as a value for <TT
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#v%3Amplus"
+>mplus</A
+></TT
+> in <TT
+><A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Control-Monad.html#t%3AMonadPlus"
+>MonadPlus</A
+></TT
+>
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:mapLeft"
+><A NAME="v%3AmapLeft"
+></A
+></A
+><B
+>mapLeft</B
+> ::  (a -&gt; b) -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> a r -&gt; <A HREF="/Library/Frameworks/GHC.framework/Versions/612/usr/share/doc/ghc/html/libraries/base-4.2.0.0/Data-Either.html#t%3AEither"
+>Either</A
+> b r</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="botbar"
+>Produced by <A HREF="http://www.haskell.org/haddock/"
+>Haddock</A
+> version 2.6.0</TD
+></TR
+></TABLE
+></BODY
+></HTML
+>

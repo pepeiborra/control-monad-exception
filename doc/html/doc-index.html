@@ -4,7 +4,7 @@
 ><HEAD
 ><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
 ><TITLE
->control-monad-exception-0.5: Explicitly typed, checked exceptions with stack traces (Index)</TITLE
+>control-monad-exception-0.8.0.3: Explicitly typed, checked exceptions with stack traces (Index)</TITLE
 ><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
 ><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
 ></SCRIPT
@@ -19,7 +19,7 @@
 ><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
 ></TD
 ><TD CLASS="title"
->control-monad-exception-0.5: Explicitly typed, checked exceptions with stack traces</TD
+>control-monad-exception-0.8.0.3: Explicitly typed, checked exceptions with stack traces</TD
 ><TD CLASS="topbut"
 ><A HREF="index.html"
 >Contents</A
@@ -30,16 +30,6 @@
 ></TD
 ></TR
 ></TABLE
-></TD
-></TR
-><TR
-><TD COLSPAN="2" STYLE="padding-top:5px;"
-><FORM onsubmit="full_search(); return false;" ACTION=""
->Search: <INPUT ID="searchbox" onkeyup="quick_search()"
-> <INPUT VALUE="Search" TYPE="submit"
-> <SPAN ID="searchmsg"
-> </SPAN
-></FORM
 ></TD
 ></TR
 ><TR
@@ -77,6 +67,16 @@
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
+>AnyException</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#t%3AAnyException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#t%3AAnyException"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
 >ap</TD
 ><TD CLASS="indexlinks"
 >Control.Monad.Exception.Catch</TD
@@ -85,7 +85,9 @@
 ><TD CLASS="indexentry"
 >bracket</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3Abracket"
+><A HREF="Control-Monad-Exception-Base.html#v%3Abracket"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3Abracket"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -93,7 +95,9 @@
 ><TD CLASS="indexentry"
 >CallTrace</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#t%3ACallTrace"
+><A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#t%3ACallTrace"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -113,7 +117,9 @@
 ><TD CLASS="indexannot"
 >2 (Function)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3Acatch"
+><A HREF="Control-Monad-Exception-Base.html#v%3Acatch"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3Acatch"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -133,7 +139,9 @@
 ><TD CLASS="indexannot"
 >2 (Function)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AcatchWithSrcLoc"
+><A HREF="Control-Monad-Exception-Base.html#v%3AcatchWithSrcLoc"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AcatchWithSrcLoc"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -179,15 +187,41 @@
 ><TD CLASS="indexentry"
 >EM</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#t%3AEM"
+><A HREF="Control-Monad-Exception-Base.html#t%3AEM"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#t%3AEM"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry" COLSPAN="2"
+>EMT</TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexannot"
+>1 (Type/Class)</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#t%3AEMT"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#t%3AEMT"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexannot"
+>2 (Data Constructor)</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3AEMT"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AEMT"
 >Control.Monad.Exception</A
 ></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
->EMT</TD
+>Error</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#t%3AEMT"
+><A HREF="Control-Monad-Exception.html#t%3AError"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -195,7 +229,11 @@
 ><TD CLASS="indexentry"
 >Exception</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception.Catch, Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception-Catch.html#t%3AException"
+>Control.Monad.Exception.Catch</A
+>, <A HREF="Control-Monad-Exception.html#t%3AException"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -211,7 +249,9 @@
 ><TD CLASS="indexannot"
 >1 (Type/Class)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#t%3AFailException"
+><A HREF="Control-Monad-Exception-Base.html#t%3AFailException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#t%3AFailException"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -219,7 +259,17 @@
 ><TD CLASS="indexannot"
 >2 (Data Constructor)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AFailException"
+><A HREF="Control-Monad-Exception-Base.html#v%3AFailException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AFailException"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>Failure</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception.html#t%3AFailure"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -227,7 +277,9 @@
 ><TD CLASS="indexentry"
 >failure</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception.html#v%3Afailure"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -239,7 +291,9 @@
 ><TD CLASS="indexentry"
 >finally</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3Afinally"
+><A HREF="Control-Monad-Exception-Base.html#v%3Afinally"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3Afinally"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -283,7 +337,11 @@
 ><TD CLASS="indexentry"
 >fromException</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception.Catch, Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception-Catch.html#v%3AfromException"
+>Control.Monad.Exception.Catch</A
+>, <A HREF="Control-Monad-Exception.html#v%3AfromException"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -296,6 +354,26 @@
 >guard</TD
 ><TD CLASS="indexlinks"
 >Control.Monad.Exception.Catch</TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry" COLSPAN="2"
+>Identity</TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexannot"
+>1 (Type/Class)</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#t%3AIdentity"
+>Control.Monad.Exception.Base</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexannot"
+>2 (Data Constructor)</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3AIdentity"
+>Control.Monad.Exception.Base</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -341,6 +419,14 @@
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
+>mapLeft</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3AmapLeft"
+>Control.Monad.Exception.Base</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
 >mapM</TD
 ><TD CLASS="indexlinks"
 >Control.Monad.Exception.Catch</TD
@@ -369,7 +455,17 @@
 ><TD CLASS="indexentry"
 >MonadFailure</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception.html#t%3AMonadFailure"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>MonadLoc</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception.html#t%3AMonadLoc"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -385,7 +481,9 @@
 ><TD CLASS="indexannot"
 >1 (Type/Class)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#t%3AMonadZeroException"
+><A HREF="Control-Monad-Exception-Base.html#t%3AMonadZeroException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#t%3AMonadZeroException"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -393,7 +491,9 @@
 ><TD CLASS="indexannot"
 >2 (Data Constructor)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AMonadZeroException"
+><A HREF="Control-Monad-Exception-Base.html#v%3AMonadZeroException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AMonadZeroException"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -402,6 +502,16 @@
 >mplus</TD
 ><TD CLASS="indexlinks"
 >Control.Monad.Exception.Catch</TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>mplusDefault</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3AmplusDefault"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AmplusDefault"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -419,9 +529,9 @@
 ><TD CLASS="indexentry"
 >NoExceptions</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception-Throws.html#t%3ANoExceptions"
->Control.Monad.Exception.Throws</A
->, Control.Monad.Exception.Catch</TD
+><A HREF="Control-Monad-Exception-Base.html#t%3ANoExceptions"
+>Control.Monad.Exception.Base</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry" COLSPAN="2"
@@ -429,17 +539,17 @@
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexannot"
->1 (Type/Class)</TD
+>1 (Data Constructor)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#t%3ANothingException"
+><A HREF="Control-Monad-Exception.html#v%3ANothingException"
 >Control.Monad.Exception</A
 ></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexannot"
->2 (Data Constructor)</TD
+>2 (Type/Class)</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3ANothingException"
+><A HREF="Control-Monad-Exception.html#t%3ANothingException"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -447,7 +557,9 @@
 ><TD CLASS="indexentry"
 >onException</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AonException"
+><A HREF="Control-Monad-Exception-Base.html#v%3AonException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AonException"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -455,9 +567,9 @@
 ><TD CLASS="indexentry"
 >ParanoidMode</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception-Throws.html#t%3AParanoidMode"
->Control.Monad.Exception.Throws</A
->, Control.Monad.Exception.Catch</TD
+><A HREF="Control-Monad-Exception-Base.html#t%3AParanoidMode"
+>Control.Monad.Exception.Base</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -475,7 +587,9 @@
 ><TD CLASS="indexentry"
 >rethrow</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3Arethrow"
+><A HREF="Control-Monad-Exception-Base.html#v%3Arethrow"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3Arethrow"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -489,7 +603,9 @@
 ><TD CLASS="indexentry"
 >runEM</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3ArunEM"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEM"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3ArunEM"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -497,7 +613,9 @@
 ><TD CLASS="indexentry"
 >runEMParanoid</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3ArunEMParanoid"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMParanoid"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3ArunEMParanoid"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -505,7 +623,9 @@
 ><TD CLASS="indexentry"
 >runEMT</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3ArunEMT"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMT"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3ArunEMT"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -513,8 +633,26 @@
 ><TD CLASS="indexentry"
 >runEMTParanoid</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3ArunEMTParanoid"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMTParanoid"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3ArunEMTParanoid"
 >Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>runEMT_gen</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMT_gen"
+>Control.Monad.Exception.Base</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>runIdentity</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunIdentity"
+>Control.Monad.Exception.Base</A
 ></TD
 ></TR
 ><TR CLASS="indexrow"
@@ -533,7 +671,9 @@
 ><TD CLASS="indexentry"
 >showExceptionWithTrace</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AshowExceptionWithTrace"
+><A HREF="Control-Monad-Exception-Base.html#v%3AshowExceptionWithTrace"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AshowExceptionWithTrace"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -545,19 +685,29 @@
 ><TD CLASS="indexannot"
 >1 (Data Constructor)</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception.Catch, Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception-Catch.html#v%3ASomeException"
+>Control.Monad.Exception.Catch</A
+>, <A HREF="Control-Monad-Exception.html#v%3ASomeException"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexannot"
 >2 (Type/Class)</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception.Catch, Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception-Catch.html#t%3ASomeException"
+>Control.Monad.Exception.Catch</A
+>, <A HREF="Control-Monad-Exception.html#t%3ASomeException"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
 >throw</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3Athrow"
+><A HREF="Control-Monad-Exception-Base.html#v%3Athrow"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3Athrow"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -575,7 +725,11 @@
 ><TD CLASS="indexentry"
 >toException</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception.Catch, Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception-Catch.html#v%3AtoException"
+>Control.Monad.Exception.Catch</A
+>, <A HREF="Control-Monad-Exception.html#v%3AtoException"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
@@ -597,7 +751,9 @@
 ><TD CLASS="indexentry"
 >tryEM</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AtryEM"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEM"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AtryEM"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -605,29 +761,61 @@
 ><TD CLASS="indexentry"
 >tryEMT</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AtryEMT"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEMT"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AtryEMT"
 >Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>tryEMTWithLoc</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEMTWithLoc"
+>Control.Monad.Exception.Base</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>tryEMWithLoc</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEMWithLoc"
+>Control.Monad.Exception.Base</A
 ></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
 >Typeable</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception.html#t%3ATypeable"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
 >typeOf</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception.html#v%3AtypeOf"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
 >UncaughtException</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception-Throws.html#t%3AUncaughtException"
->Control.Monad.Exception.Throws</A
->, Control.Monad.Exception.Catch, <A HREF="Control-Monad-Exception.html#t%3AUncaughtException"
+><A HREF="Control-Monad-Exception-Base.html#t%3AUncaughtException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#t%3AUncaughtException"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>unEMT</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception-Base.html#v%3AunEMT"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AunEMT"
 >Control.Monad.Exception</A
 ></TD
 ></TR
@@ -647,19 +835,41 @@
 ><TD CLASS="indexentry"
 >withLoc</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception.html#v%3AwithLoc"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
 >withLocTH</TD
 ><TD CLASS="indexlinks"
->Control.Monad.Exception</TD
+><A HREF="Control-Monad-Exception.html#v%3AwithLocTH"
+>Control.Monad.Exception</A
+></TD
 ></TR
 ><TR CLASS="indexrow"
 ><TD CLASS="indexentry"
 >wrapException</TD
 ><TD CLASS="indexlinks"
-><A HREF="Control-Monad-Exception.html#v%3AwrapException"
+><A HREF="Control-Monad-Exception-Base.html#v%3AwrapException"
+>Control.Monad.Exception.Base</A
+>, <A HREF="Control-Monad-Exception.html#v%3AwrapException"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>WrapFailure</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception.html#t%3AWrapFailure"
+>Control.Monad.Exception</A
+></TD
+></TR
+><TR CLASS="indexrow"
+><TD CLASS="indexentry"
+>wrapFailure</TD
+><TD CLASS="indexlinks"
+><A HREF="Control-Monad-Exception.html#v%3AwrapFailure"
 >Control.Monad.Exception</A
 ></TD
 ></TR

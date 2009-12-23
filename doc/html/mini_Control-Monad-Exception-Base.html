@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>Control.Monad.Exception.Base</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
+></SCRIPT
+></HEAD
+><BODY
+><DIV CLASS="outer"
+><DIV CLASS="mini-topbar"
+>Control.Monad.Exception.Base</DIV
+><DIV CLASS="mini-synopsis"
+><DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3ACallTrace" TARGET="main"
+>CallTrace</A
+> </DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AEMT" TARGET="main"
+>EMT</A
+> l m a</DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEMT" TARGET="main"
+>tryEMT</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEMTWithLoc" TARGET="main"
+>tryEMTWithLoc</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMT_gen" TARGET="main"
+>runEMT_gen</A
+></DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AAnyException" TARGET="main"
+>AnyException</A
+> </DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3ANoExceptions" TARGET="main"
+>NoExceptions</A
+> </DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AParanoidMode" TARGET="main"
+>ParanoidMode</A
+> </DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMT" TARGET="main"
+>runEMT</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMTParanoid" TARGET="main"
+>runEMTParanoid</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3Athrow" TARGET="main"
+>throw</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3Arethrow" TARGET="main"
+>rethrow</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3Acatch" TARGET="main"
+>catch</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AcatchWithSrcLoc" TARGET="main"
+>catchWithSrcLoc</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3Afinally" TARGET="main"
+>finally</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AonException" TARGET="main"
+>onException</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3Abracket" TARGET="main"
+>bracket</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AwrapException" TARGET="main"
+>wrapException</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AshowExceptionWithTrace" TARGET="main"
+>showExceptionWithTrace</A
+></DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>class</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AUncaughtException" TARGET="main"
+>UncaughtException</A
+> e</DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AEM" TARGET="main"
+>EM</A
+> l</DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEM" TARGET="main"
+>tryEM</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AtryEMWithLoc" TARGET="main"
+>tryEMWithLoc</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEM" TARGET="main"
+>runEM</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3ArunEMParanoid" TARGET="main"
+>runEMParanoid</A
+></DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AIdentity" TARGET="main"
+>Identity</A
+> a</DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AFailException" TARGET="main"
+>FailException</A
+> </DIV
+> <DIV CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>&nbsp;<A HREF="Control-Monad-Exception-Base.html#t%3AMonadZeroException" TARGET="main"
+>MonadZeroException</A
+> </DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AmplusDefault" TARGET="main"
+>mplusDefault</A
+></DIV
+> <DIV CLASS="decl"
+><A HREF="Control-Monad-Exception-Base.html#v%3AmapLeft" TARGET="main"
+>mapLeft</A
+></DIV
+></DIV
+></DIV
+></BODY
+></HTML
+>
