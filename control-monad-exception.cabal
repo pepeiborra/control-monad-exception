@@ -65,7 +65,8 @@ description:
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads, Failure
 stability: experimental
-tested-with: GHC ==6.10.3
+tested-with: GHC == 6.12.1
+bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
 
 Flag extensibleExceptions
   description: Use extensible-exception package
