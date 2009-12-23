@@ -51,8 +51,7 @@ data Caught e l
 >   instance Throws ChildException (Caught TopException l)   --         |
 >                                                            --  ChildException
 
-     'SomeException' is automatically
-      an ancestor of every other exception type.
+     Note that 'SomeException' is automatically an ancestor of every other exception type.
 
 -}
 

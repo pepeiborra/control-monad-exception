@@ -190,7 +190,7 @@ showExceptionWithTrace [] e = show e
 showExceptionWithTrace trace e = concat ( show e
                                         : [ " in " ++ show loc | loc <- reverse trace])
 
--- | Uncaught Exceptions model unchecked exceptions
+-- | UncaughtException models unchecked exceptions
 --
 --   In order to declare an unchecked exception @E@,
 --   all that is needed is to make @e@ an instance of 'UncaughtException'
@@ -198,12 +198,7 @@ showExceptionWithTrace trace e = concat ( show e
 --  > instance UncaughtException E
 --
 --   Note that declaring an exception E as unchecked does not automatically
---   turn its children as unchecked too. This is a shortcoming of the current encoding.
---
---   If that is what you want, then declare E as unchecked and unexplicit
---    using an instance of 'Throws':
---
---  > instance Throws E l
+--   turn its children unchecked too. This is a shortcoming of the current encoding.
 
 class Exception e => UncaughtException e
 instance UncaughtException e => Throws e NoExceptions

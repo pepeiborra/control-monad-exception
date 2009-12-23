@@ -39,6 +39,3 @@ class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
 
 instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch
-
--- Throw and Catch instances for the Either and ErrorT monads
--- -----------------------------------------------------------
