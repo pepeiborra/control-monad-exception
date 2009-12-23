@@ -84,15 +84,8 @@ import Data.Typeable
 
 {- $hierarchies
  If your sets of exceptions are hierarchical then you need to
-   teach 'Throws' about the hierarchy.
-
->                                                            --   TopException
->                                                            --         |
->   instance Throws MidException   (Caught TopException l)   --         |
->                                                            --   MidException
->   instance Throws ChildException (Caught MidException l)   --         |
->   instance Throws ChildException (Caught TopException l)   --         |
->                                                            --  ChildException
+   teach 'Throws' about the hierarchy. See the documentation of
+   'Throws' for more info.
 -}
 {- $unchecked
 An exception @E@ can be declared as unchecked by making @E@ an instance of

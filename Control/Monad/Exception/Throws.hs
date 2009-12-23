@@ -25,8 +25,9 @@ data Caught e l
     used to model a list of exceptions.
 
     There is only one case in which the user must
-    add further instances to @Throws@, and that is
-    to encode the hierarchy of exceptions.
+    add further instances to @Throws@.
+    If your sets of exceptions are hierarchical then you need to
+   teach 'Throws' about the hierarchy.
 
     [/Subtyping/]
      As there is no way to automatically infer
