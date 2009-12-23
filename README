@@ -1,0 +1,50 @@
+control-monad-exception: explicitly Typed exceptions as a library
+
+
+Install
+-------
+You can obtain this package from Hackage. If you have cabal-install you can simply type:
+
+cabal install control-monad-exception
+to install it.
+
+Documentation
+--------------
+Haddock documentation available at Hackage or GitHub.
+
+- http://pepeiborra.github.com/control-monad-exception/
+- http://hackage.haskell.org/package/control-monad-exception
+
+Code examples available at
+
+- http://pepeiborra.posterous.com/control-monad-exception-and-the-long-type-sig
+- http://github.com/MarcWeber/monad-failure-examples
+
+There is a paper explaining the ideas behind this library:
+
+Explicitly typed exceptions for Haskell(PDF). Jose Iborra, PADL'10.
+<http://safe-tools.dsic.upv.es/mediawiki/index.php/Jose_Iborra/Papers/Exceptions>
+
+
+Changelog
+---------
+0.8.0.3 - Inconsistencies in the documentation and the API fixed thanks to Marc Weber
+0.8.0.2 - Remove outdated documentation sections,
+        - Purge several warnings,
+        - Fix a bug in the Failure instance for EMT
+0.8.0.1 - Include in the Failure category
+0.8.0   - Update to the Second installment of the failure framework
+
+Contribute
+----------
+
+The source code for this library is available on GitHub and you can clone the project with Git by running:
+
+$ git clone git://github.com/pepeiborra/control-monad-exception
+You can also create or vote on issues or fork this project. I will be happy to merge patches fixing issues or extending the library.
+
+
+Contact
+-------
+
+Pepe Iborra (pepeiborra@gmail.com) 
