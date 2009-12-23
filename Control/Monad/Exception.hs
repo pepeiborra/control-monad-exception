@@ -1,6 +1,9 @@
 
 {-|
-A Monad Transformer for explicitly typed checked exceptions.
+A Monad Transformer for explicitly typed checked exceptions, described in detail by:
+
+  * Jose Iborra, \"Explicitly Typed Exceptions for Haskell",
+    PADL'10, January 2010, <http://safe-tools.dsic.upv.es/mediawiki/index.php/Jose_Iborra/Papers/Exceptions>
 
 The exceptions thrown by a computation are inferred by the typechecker
 and appear in the type signature of the computation as 'Throws' constraints.
