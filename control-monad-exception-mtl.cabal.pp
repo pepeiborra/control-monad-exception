@@ -1,5 +1,5 @@
 name: control-monad-exception-mtl
-version: 0.8.0.2
+version: 0.8.0.3
 Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
