@@ -224,7 +224,7 @@ type EM l = EMT l Identity
 tryEM :: EM AnyException a -> Either SomeException a
 tryEM = runIdentity . tryEMT
 
-tryEMWithLoc :: EM (AnyException l) a -> Either (CallTrace, SomeException) a
+tryEMWithLoc :: EM AnyException a -> Either (CallTrace, SomeException) a
 tryEMWithLoc = runIdentity . tryEMTWithLoc
 
 -- | Run a safe computation
