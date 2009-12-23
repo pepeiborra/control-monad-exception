@@ -50,7 +50,6 @@ import Control.Monad.Loc
 import Control.Failure
 import Control.Monad.Fix
 import Data.Typeable
-import Text.PrettyPrint
 import Prelude hiding (catch)
 
 type CallTrace = [String]
@@ -188,11 +187,8 @@ wrapException mkE m = m `Control.Monad.Exception.Base.catchWithSrcLoc` \loc e ->
 
 showExceptionWithTrace :: Exception e => [String] -> e -> String
 showExceptionWithTrace [] e = show e
-showExceptionWithTrace trace e = render$
-             text (show e) $$
-             text " in" <+> (vcat (map text $ reverse trace))
-{-
--}
+showExceptionWithTrace trace e = concat ( show e
+                                        : [ " in " ++ show loc | loc <- reverse trace])
 
 -- | Uncaught Exceptions model unchecked exceptions
 --

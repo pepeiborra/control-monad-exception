@@ -76,7 +76,6 @@ Library
   buildable: True 
   build-depends: failure
                , monadloc
-               , pretty
 
   if flag(extensibleExceptions)
     build-depends:
