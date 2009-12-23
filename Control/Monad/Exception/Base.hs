@@ -58,10 +58,8 @@ type CallTrace = [String]
 -- | A Monad Transformer for explicitly typed checked exceptions.
 newtype EMT l m a = EMT {unEMT :: m (Either (CallTrace, CheckedException l) a)}
 
-type AnyException = Caught SomeException
-
 -- | Run a computation explicitly handling exceptions
-tryEMT :: Monad m => EMT (AnyException l) m a -> m (Either SomeException a)
+tryEMT :: Monad m => EMT AnyException m a -> m (Either SomeException a)
 tryEMT (EMT m) = mapLeft (checkedException.snd) `liftM` m
 
 runEMT_gen :: forall l m a . Monad m => EMT l m a -> m a
@@ -70,8 +68,11 @@ runEMT_gen (EMT m) = m >>= \x ->
                        Right x -> return x
                        Left (loc,e) -> error (showExceptionWithTrace loc (checkedException e))
 
+data AnyException
 data NoExceptions
 data ParanoidMode
+
+instance Exception e => Throws e AnyException
 
 -- | Run a safe computation
 runEMT :: Monad m => EMT NoExceptions m a -> m a
@@ -217,7 +218,7 @@ instance UncaughtException SomeException
 type EM l = EMT l Identity
 
 -- | Run a computation explicitly handling exceptions
-tryEM :: EM (AnyException l) a -> Either SomeException a
+tryEM :: EM AnyException a -> Either SomeException a
 tryEM = runIdentity . tryEMT
 
 -- | Run a safe computation
