@@ -6,66 +6,12 @@ license: PublicDomain
 author: Pepe Iborra
 maintainer: pepeiborra@gmail.com
 homepage: http://pepeiborra.github.com/control-monad-exception
-description: 
-  This package provides explicitly typed, checked exceptions as a library.
-  .
-  Computations throwing different types of exception can be combined seamlessly.
-  .
-  /Example/
-  .
-  > data Expr = Add Expr Expr | Div Expr Expr | Val Double
-  > eval (Val x)     = return x
-  > eval (Add a1 a2) = do
-  >    v1 <- eval a1
-  >    v2 <- eval a2
-  >    let sum = v1 + v2
-  >    if sum < v1 || sum < v2 then throw SumOverflow else return sum
-  > eval (Div a1 a2) = do
-  >    v1 <- eval a1
-  >    v2 <- eval a2
-  >    if v2 == 0 then throw DivideByZero else return (v1 / v2)
-  .
-  > data DivideByZero = DivideByZero deriving (Show, Typeable)
-  > data SumOverflow  = SumOverflow  deriving (Show, Typeable)
-  .
-  > instance Exception DivideByZero
-  > instance Exception SumOverflow
-  .
-  GHCi infers the following types
-  .
-  > eval :: (Throws DivideByZero l, Throws SumOverflow l) => Expr -> EM l Double
-  > eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
-  > runEM(eval `catch` \ (e::SomeException) -> return (-1))  :: Expr -> Double
-  .
-  .
-  In addition to explicitly typed exceptions his package provides:
-  .
-    * Support for explicitly documented, unchecked exceptions (via 'Control.Monad.Exception.tryEMT').
-  .
-    * Support for selective unchecked exceptions (via 'Control.Monad.Exception.UncaughtException').
-  .
-    * Support for exception call traces via 'Control.Monad.Loc.MonadLoc'. /Example:/
-  .
-  >
-  > f () = do throw MyException
-  > g a  = do f a
-  >
-  > main = runEMT $ do g () `catchWithSrcLoc`
-  >                        \loc (e::MyException) -> lift(putStrLn$ showExceptionWithTrace loc e)
-  >
-  > -- Running main produces the output:
-  >
-  > *Main> main
-  >  MyException
-  >    in f, Main(example.hs): (1,6)
-  >       g, Main(example.hs): (2,6)
-  >       main, Main(example.hs): (5,9)
-  >       main, Main(example.hs): (4,16)
-
-synopsis: Explicitly typed, checked exceptions with stack traces
+description: Monads-tf instances for the EMT exceptions monad transformer
+synopsis: Monads-tf instances for the EMT exceptions monad transformer
 category: Control, Monads, Failure
 stability: experimental
-tested-with: GHC ==6.10.3
+tested-with: GHC == 6.12.1
+bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
 
 Library
   buildable: True 
