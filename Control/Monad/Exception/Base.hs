@@ -187,8 +187,8 @@ wrapException mkE m = m `Control.Monad.Exception.Base.catchWithSrcLoc` \loc e ->
 
 showExceptionWithTrace :: Exception e => [String] -> e -> String
 showExceptionWithTrace [] e = show e
-showExceptionWithTrace trace e = concat ( show e
-                                        : [ " in " ++ show loc | loc <- reverse trace])
+showExceptionWithTrace trace e = unlines ( show e
+                                         : [ " in " ++ show loc | loc <- reverse trace])
 
 -- | UncaughtException models unchecked exceptions
 --
