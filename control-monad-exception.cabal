@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.8.0.4
+version: 0.9.0
 Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
@@ -74,7 +74,8 @@ Flag extensibleExceptions
 
 Library
   buildable: True 
-  build-depends: failure
+  build-depends: failure >= 0.1 && < 0.2
+               , safe-failure >= 0.3
                , monadloc
 
   if flag(extensibleExceptions)
@@ -99,6 +100,7 @@ Library
      Control.Monad.Exception.Base
      Control.Monad.Exception.Catch
      Control.Monad.Exception.Throws
+     Control.Monad.Exception.Instances
 
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-orphans
 
