@@ -1,5 +1,5 @@
 name: control-monad-exception-monadsfd
-version: 0.8.0.3
+version: 0.9
 Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
@@ -18,7 +18,7 @@ Library
   build-depends: base > 4 && < 5
                , control-monad-exception >= 0.8.0
                , transformers >= 0.1.0
-               , monads-fd    >= 0.0.0.1
+               , monads-fd    >= 0.1
 
   extensions:  ScopedTypeVariables, 
                PackageImports,

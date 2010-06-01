@@ -17,8 +17,8 @@ import Control.Monad.Exception.Catch
 import "monads-tf" Control.Monad.Cont.Class
 import "monads-tf" Control.Monad.RWS.Class
 
-import "transformers" Control.Monad.Trans.Class
-
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Class
 import Control.Monad.Trans.Error
 import Control.Monad.Trans.List
 import Control.Monad.Trans.Reader (ReaderT(..))

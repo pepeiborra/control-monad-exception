@@ -15,8 +15,9 @@ import Control.Monad.Exception hiding (catch, Error)
 import Control.Monad.Exception.Catch
 import "monads-fd" Control.Monad.Cont.Class
 import "monads-fd" Control.Monad.RWS.Class
-import "transformers" Control.Monad.Trans.Class
 
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Class
 import Control.Monad.Trans.Error
 import Control.Monad.Trans.List
 import Control.Monad.Trans.Reader (ReaderT(..))
