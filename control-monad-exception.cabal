@@ -75,7 +75,7 @@ Flag extensibleExceptions
 Library
   buildable: True 
   build-depends: failure >= 0.1 && < 0.2
-               , safe-failure >= 0.3
+               , safe-failure >= 0.5
                , monadloc
 
   if flag(extensibleExceptions)
