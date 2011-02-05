@@ -48,6 +48,7 @@ module Control.Monad.Exception.Base where
 import Control.Applicative
 import Control.Monad.Exception.Catch
 import Control.Monad.Loc
+import Control.Monad.Trans.Class
 import Control.Failure
 import Control.Monad.Fix
 import Data.Typeable
@@ -118,6 +119,9 @@ instance (Exception e, Throws e l, Failure e m, Monad m) => WrapFailure e (EMT l
             Right _ -> return v
             Left (loc, CheckedException (SomeException e))
                     -> return $ Left (loc, CheckedException $ toException $ mkE e)
+
+instance MonadTrans (EMT l) where
+  lift = EMT . liftM Right
 
 instance (Exception e, Monad m) => MonadCatch e (EMT (Caught e l) m) (EMT l m) where
   catchWithSrcLoc = Control.Monad.Exception.Base.catchWithSrcLoc

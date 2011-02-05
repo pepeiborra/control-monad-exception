@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.9.0
+version: 0.9.1
 Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
@@ -61,6 +61,10 @@ description:
   >       g, Main(example.hs): (2,6)
   >       main, Main(example.hs): (5,9)
   >       main, Main(example.hs): (4,16)
+  .
+  /Changes since 0.9.0/:
+  .
+    * Moved to transformers (finally leaving the whole mtl-transformers cisma behind)
 
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads, Failure
@@ -76,6 +80,7 @@ Library
   buildable: True 
   build-depends: failure >= 0.1 && < 0.2
                , safe-failure >= 0.5
+               , transformers
                , monadloc
 
   if flag(extensibleExceptions)

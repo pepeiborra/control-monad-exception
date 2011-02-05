@@ -28,8 +28,6 @@ import Control.Monad.Trans.RWS (RWST(..))
 import Data.Monoid
 import Prelude hiding (catch)
 
-instance MonadTrans (EMT l) where lift = EMT . liftM Right
-
 instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
   liftIO m = EMT (liftIO m') where
       m' = liftM Right m

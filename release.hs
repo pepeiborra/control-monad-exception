@@ -115,13 +115,11 @@ main = do
   (`finally` restore) . (`CE.catch` \e@SomeException{} -> print e >> putStrLn "aborting") $ do
     uploadActions <- forM descriptors $ \d -> do
       exists <- doesFileExist d
-      let ext = takeExtension d
       if exists || isScript action
-        then cabal_upload d <*
-             case ext of
-               ".cabal" -> cabal_test d <* cabal_dist d <* rm d
-               ".pp" -> let d' = dropExtension d in
-                        copy d d' <* cabal_test d' <* cabal_dist d' <* rm d'
+        then case takeExtension d of
+               ".cabal" -> cabal_upload d <* cabal_test d <* cabal_dist d <* rm d
+               ".pp" -> let d' = dropExtension d in (`finally` rm d') $
+                        cabal_upload d <* copy d d' <* cabal_test d' <* cabal_dist d'
         else pure (pure (Fail d))
 
 

@@ -1,5 +1,5 @@
 name: control-monad-exception-monadstf
-version: 0.9
+version: 0.9.1
 Cabal-Version:  >= 1.6
 build-type: Simple
 license: PublicDomain
@@ -16,7 +16,7 @@ bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
 Library
   buildable: True 
   build-depends: base > 4 && < 5
-               , control-monad-exception >= 0.8.0
+               , control-monad-exception >= 0.9.1
                , transformers >= 0.1.0
                , monads-tf    >= 0.1
 
@@ -31,7 +31,7 @@ Library
   exposed-modules:
      Control.Monad.Exception.MonadsTF
 
-  hs-source-dirs: src-monadstf
+  hs-source-dirs: extensions
 
   ghc-options: -Wall -fno-warn-name-shadowing -fno-warn-orphans
 
