@@ -11,19 +11,19 @@ category: Control, Monads, Failure
 stability: experimental
 tested-with: GHC == 6.12.1
 bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
-description: 
+description:
   MTL instances for the EMT exceptions monad transformer
   .
   /This package is only applicable for the now-deprecated mtl v1. Since mtl v2 is compatible with the transformers package, users of mtl2 should simply use the control-monad-exception package.
 
 Library
-  buildable: True 
+  buildable: True
   build-depends: base > 4 && < 5
                , control-monad-exception >= 0.8.0 && <= 0.9.0
                , mtl
 
 
-  extensions:  ScopedTypeVariables, 
+  extensions:  ScopedTypeVariables,
                PackageImports,
                MultiParamTypeClasses,
                FlexibleContexts,
