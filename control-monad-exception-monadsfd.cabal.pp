@@ -14,13 +14,13 @@ tested-with: GHC == 6.12.1
 bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
 
 Library
-  buildable: True 
+  buildable: True
   build-depends: base > 4 && < 5
                , control-monad-exception >= 0.9.1
                , transformers >= 0.1.0
                , monads-fd    >= 0.1
 
-  extensions:  ScopedTypeVariables, 
+  extensions:  ScopedTypeVariables,
                PackageImports,
                MultiParamTypeClasses,
                FlexibleContexts,

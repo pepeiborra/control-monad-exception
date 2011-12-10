@@ -6,7 +6,7 @@ license: PublicDomain
 author: Pepe Iborra
 maintainer: pepeiborra@gmail.com
 homepage: http://pepeiborra.github.com/control-monad-exception
-description: 
+description:
   This package provides explicitly typed, checked exceptions as a library.
   .
   Computations throwing different types of exception can be combined seamlessly.
@@ -78,7 +78,7 @@ Flag extensibleExceptions
   default: False
 
 Library
-  buildable: True 
+  buildable: True
   build-depends: failure >= 0.1 && < 0.2
                , transformers
                , monadloc

@@ -15,15 +15,15 @@ Example:
 >    v1 <- eval a1
 >    v2 <- eval a2
 >    if v2 == 0 then throw DivideByZero else return (v1 / v2)
-  
+
 > data DivideByZero = DivideByZero deriving (Show, Typeable)
 > data SumOverflow  = SumOverflow  deriving (Show, Typeable)
-  
+
 > instance Exception DivideByZero
 > instance Exception SumOverflow
-  
+
   GHCi infers the following types
-  
+
  $> eval :: (Throws DivideByZero l, Throws SumOverflow l) => Expr -> EM l Double
  $> eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
 
