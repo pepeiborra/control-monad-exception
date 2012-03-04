@@ -23,11 +23,15 @@ Code examples available at
 There is a paper explaining the ideas behind this library:
 
 Explicitly typed exceptions for Haskell(PDF). Jose Iborra, PADL'10.
-<http://safe-tools.dsic.upv.es/mediawiki/index.php/Jose_Iborra/Papers/Exceptions>
+<https://dl.dropbox.com/s/lgm12trtl0swtra/PADL10.pdf?dl=1>
 
 
 Changelog
 ---------
+0.10.1  - update to failure-0.2.0 (thanks to Bas van Dijk)
+0.10.0  - Trim dependencies down by user request
+0.9.1   - Update to mtl-2
+0.9.0   - Update to failure 0.1.0 and transformers 2
 0.8.0.3 - Inconsistencies in the documentation and the API fixed thanks to Marc Weber
 0.8.0.2 - Remove outdated documentation sections,
         - Purge several warnings,
