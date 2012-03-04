@@ -53,6 +53,7 @@ import Control.Monad.Trans.Class
 import Control.Failure
 import Control.Monad.Fix
 import Data.Typeable
+import Data.Functor.Identity
 import Prelude hiding (catch)
 
 type CallTrace = [String]
@@ -233,11 +234,6 @@ runEM = runIdentity . runEMT
 -- | Run a computation checking even unchecked (@UncaughtExceptions@) exceptions
 runEMParanoid :: EM ParanoidMode a -> a
 runEMParanoid = runIdentity . runEMTParanoid
-
-newtype Identity a = Identity{runIdentity::a} deriving (Eq, Ord, Show)
-instance Monad Identity where
-  return = Identity
-  Identity a >>= f = f a
 
 instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
