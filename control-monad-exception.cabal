@@ -80,7 +80,7 @@ Flag extensibleExceptions
 Library
   buildable: True 
   build-depends: failure >= 0.1 && < 0.3
-               , transformers
+               , transformers >= 0.2
                , monadloc
 
   if flag(extensibleExceptions)
