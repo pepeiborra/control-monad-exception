@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 
 {-|
 A Monad Transformer for explicitly typed checked exceptions, described in detail by:
@@ -74,8 +75,11 @@ module Control.Monad.Exception (
 
 -- * Reexports
     Exception(..), SomeException(..), Typeable(..),
+    Failure(..),
+#if !MIN_VERSION_failure(0,2,0)
     Try(..), NothingException(..),
-    Failure(..), WrapFailure(..),
+    WrapFailure(..),
+#endif
     MonadLoc(..), withLocTH
 ) where
 
