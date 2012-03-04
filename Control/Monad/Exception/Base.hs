@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, TypeSynonymInstances #-}
@@ -111,6 +112,7 @@ instance Monad m => Applicative (EMT l m) where
 instance (Exception e, Throws e l, Monad m) => Failure e (EMT l m) where
   failure = throw
 
+#if !MIN_VERSION_failure(0,2,0)
 instance (Exception e, Throws e l, Failure e m, Monad m) => WrapFailure e (EMT l m) where
   wrapFailure mkE m
       = EMT $ do
@@ -119,6 +121,7 @@ instance (Exception e, Throws e l, Failure e m, Monad m) => WrapFailure e (EMT l
             Right _ -> return v
             Left (loc, CheckedException (SomeException e))
                     -> return $ Left (loc, CheckedException $ toException $ mkE e)
+#endif
 
 instance MonadTrans (EMT l) where
   lift = EMT . liftM Right
