@@ -1,6 +1,6 @@
 name: control-monad-exception
 version: 0.10.1
-Cabal-Version:  >= 1.6
+Cabal-Version:  >= 1.10
 build-type: Simple
 license: PublicDomain
 author: Pepe Iborra
@@ -78,6 +78,7 @@ Flag extensibleExceptions
   default: False
 
 Library
+  default-language: Haskell98
   buildable: True 
   build-depends: failure >= 0.1 && < 0.3
                , transformers >= 0.2
@@ -91,14 +92,22 @@ Library
     build-depends:
       base >= 4 && < 5
 
-  extensions:  MultiParamTypeClasses,
-               ScopedTypeVariables,
-               FlexibleContexts,
-               FlexibleInstances,
-               TypeSynonymInstances,
-               EmptyDataDecls,
-               DeriveDataTypeable,
-               PatternGuards
+  default-extensions:
+     CPP
+     DeriveDataTypeable
+     EmptyDataDecls
+     ExistentialQuantification
+     FlexibleContexts
+     FlexibleInstances
+     FunctionalDependencies
+     MultiParamTypeClasses
+     OverlappingInstances
+     PackageImports
+     PatternGuards
+     ScopedTypeVariables
+     TypeFamilies
+     TypeSynonymInstances
+     UndecidableInstances
 
   exposed-modules:
      Control.Monad.Exception
