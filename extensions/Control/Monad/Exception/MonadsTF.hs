@@ -1,5 +1,4 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -9,15 +8,12 @@
 module Control.Monad.Exception.MonadsTF (module Control.Monad.Exception, Control.Monad.Exception.catch
                                         ) where
 
-import qualified Control.Exception as CE
-
 import qualified Control.Monad.Exception
 import Control.Monad.Exception hiding (catch, Error)
 import Control.Monad.Exception.Catch
-import "monads-tf" Control.Monad.Cont.Class
-import "monads-tf" Control.Monad.RWS.Class
+import Control.Monad.Cont.Class
+import Control.Monad.RWS.Class
 
-import Control.Monad.IO.Class
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Error
 import Control.Monad.Trans.List
@@ -28,12 +24,6 @@ import Control.Monad.Trans.RWS (RWST(..))
 
 import Data.Monoid
 import Prelude hiding (catch)
-
-instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
-  liftIO m = EMT (liftIO m') where
-      m' = liftM Right m
-            `CE.catch`
-           \(e::SomeException) -> return (Left ([], CheckedException e))
 
 instance MonadCont m => MonadCont (EMT l m) where
   callCC f = EMT $ callCC $ \c -> unEMT (f (\a -> EMT $ c (Right a)))

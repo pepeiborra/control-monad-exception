@@ -46,10 +46,12 @@ Exceptions are defined using the extensible exceptions framework of Marlow (docu
 -}
 module Control.Monad.Exception.Base where
 
+import qualified Control.Exception as CE
 import Control.Applicative
 import Control.Monad.Exception.Catch
 import Control.Monad.Loc
 import Control.Monad.Trans.Class
+import Control.Monad.IO.Class
 import Control.Failure
 import Control.Monad.Fix
 import Data.Typeable
@@ -263,3 +265,10 @@ mplusDefault emt1 emt2 = EMT$ do
 mapLeft :: (a -> b) -> Either a r -> Either b r
 mapLeft f (Left x)  = Left (f x)
 mapLeft _ (Right x) = Right x
+
+
+instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
+  liftIO m = EMT (liftIO m') where
+      m' = liftM Right m
+            `CE.catch`
+           \(e::SomeException) -> return (Left ([], CheckedException e))

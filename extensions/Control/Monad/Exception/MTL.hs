@@ -1,32 +1,22 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 -- | 'EMT' liftings for the classes in the Monad Transformer Library
 module Control.Monad.Exception.MTL (module Control.Monad.Exception, Control.Monad.Exception.catch) where
 
-import qualified Control.Exception as CE
 
 import qualified Control.Monad.Exception
 import Control.Monad.Exception hiding (catch, Error)
 import Control.Monad.Exception.Catch as Catch
-import "mtl" Control.Monad.Cont.Class
-import "mtl" Control.Monad.Error
-import "mtl" Control.Monad.List
-import "mtl" Control.Monad.Reader
-import "mtl" Control.Monad.State
-import "mtl" Control.Monad.Writer
-import "mtl" Control.Monad.RWS
+import Control.Monad.Cont.Class
+import Control.Monad.Error
+import Control.Monad.List
+import Control.Monad.Reader
+import Control.Monad.State
+import Control.Monad.Writer
+import Control.Monad.RWS
 import Prelude hiding (catch)
-
-instance MonadTrans (EMT l) where lift = EMT . liftM Right
-
-instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
-  liftIO m = EMT (liftIO m') where
-      m' = liftM Right m
-            `CE.catch`
-           \(e::SomeException) -> return (Left ([], CheckedException e))
 
 instance MonadCont m => MonadCont (EMT l m) where
   callCC f = EMT $ callCC $ \c -> unEMT (f (\a -> EMT $ c (Right a)))
