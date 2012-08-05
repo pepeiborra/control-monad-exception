@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.10.4
+version: 0.10.3.1
 Cabal-Version:  >= 1.10
 build-type: Simple
 license: PublicDomain
@@ -72,10 +72,12 @@ description:
      * 0.10.1 - compatibility with failure 0.2 (thanks to Bas van Dijk)
   .  
      * 0.10.2 - use the identity type from mtl (thanks to Bas), require minimum cabal-install version (thanks to Bernhard Urban)
+  .
+     * 0.10.3 - Moved the MonadIO instance to the main package
 
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads, Failure
-stability: experimental
+stability: provisional
 tested-with: GHC == 6.12.1
 bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
 
@@ -88,7 +90,7 @@ Library
   buildable: True 
   build-depends: failure >= 0.1 && < 0.3
                , transformers >= 0.2
-               , monadloc
+               , monadloc >= 0.7
 
   if flag(extensibleExceptions)
     build-depends:
