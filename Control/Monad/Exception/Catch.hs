@@ -30,12 +30,10 @@ import qualified Control.Exception
 
 import Control.Monad.Exception.Throws
 
-import Prelude hiding (catch)
-
 class (Monad m, Monad m') => MonadCatch e m m' | e m -> m', e m' -> m where
    catch   :: m a -> (e -> m' a) -> m' a
    catchWithSrcLoc :: m a -> ([String] -> e -> m' a) -> m' a
-   catchWithSrcLoc m h = catch m (h [])
+   catchWithSrcLoc m h = Control.Monad.Exception.Catch.catch m (h [])
 
 instance Exception e => MonadCatch e IO IO where
    catch   = Control.Exception.catch

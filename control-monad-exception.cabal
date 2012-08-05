@@ -74,6 +74,8 @@ description:
      * 0.10.2 - use the identity type from mtl (thanks to Bas), require minimum cabal-install version (thanks to Bernhard Urban)
   .
      * 0.10.3 - Moved the MonadIO instance to the main package
+  .
+     * 0.10.3.1 - Compatibility with base 4.6
 
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads, Failure

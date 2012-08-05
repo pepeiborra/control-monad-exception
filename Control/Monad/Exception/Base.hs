@@ -56,7 +56,6 @@ import Control.Failure
 import Control.Monad.Fix
 import Data.Typeable
 import Data.Functor.Identity
-import Prelude hiding (catch)
 
 type CallTrace = [String]
 
