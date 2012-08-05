@@ -1,5 +1,5 @@
 name: control-monad-exception-monadsfd
-version: 0.10.3
+version: 0.10.4
 Cabal-Version:  >= 1.10
 build-type: Simple
 license: PublicDomain

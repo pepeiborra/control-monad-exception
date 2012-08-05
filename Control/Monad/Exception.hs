@@ -87,6 +87,7 @@ import Control.Monad.Exception.Base
 import Control.Monad.Exception.Catch
 import Control.Failure
 import Control.Monad.Loc
+import Control.Monad.Loc.TH
 import Data.Typeable
 
 {- $hierarchies
