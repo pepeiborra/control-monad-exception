@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.10.3.1
+version: 0.11
 Cabal-Version:  >= 1.10
 build-type: Simple
 license: PublicDomain
@@ -76,6 +76,8 @@ description:
      * 0.10.3 - Moved the MonadIO instance to the main package
   .
      * 0.10.3.1 - Compatibility with base 4.6
+  .
+     * 0.11 - Experimental support for asynchronous exceptions (via monad-control)
 
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads, Failure
@@ -92,7 +94,10 @@ Library
   buildable: True 
   build-depends: failure >= 0.1 && < 0.3
                , transformers >= 0.2
+               , transformers-base >= 0.4.1
                , monadloc >= 0.7
+               , monad-control >= 0.3
+               , lifted-base >= 0.2.1
 
   if flag(extensibleExceptions)
     build-depends:
@@ -121,6 +126,8 @@ Library
 
   exposed-modules:
      Control.Monad.Exception
+     Control.Monad.Exception.Pure
+     Control.Monad.Exception.IO
      Control.Monad.Exception.Base
      Control.Monad.Exception.Catch
      Control.Monad.Exception.Throws
