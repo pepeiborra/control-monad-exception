@@ -7,7 +7,6 @@
 {-# LANGUAGE OverlappingInstances #-}
 module Control.Monad.Exception.Base where
 
-import qualified Control.Exception as CE
 import Control.Applicative
 import Control.Monad.Base
 import Control.Monad.Exception.Catch
@@ -196,8 +195,5 @@ mapLeft f (Left x)  = Left (f x)
 mapLeft _ (Right x) = Right x
 
 
-instance (Throws SomeException l, MonadIO m) => MonadIO (EMT l m) where
-  liftIO m = EMT (liftIO m') where
-      m' = liftM Right m
-            `CE.catch`
-           \(e::SomeException) -> return (Left ([], CheckedException e))
+instance MonadIO m => MonadIO (EMT l m) where
+  liftIO = lift . liftIO

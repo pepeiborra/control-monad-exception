@@ -179,15 +179,20 @@ missing a type annotation to pin down the type of the exception.
 catch :: (Exception e, MonadBaseControl IO m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
 catch emt h = catchWithSrcLoc emt (\_ -> h)
 
+unwrap m = do
+  v <- CE.try $ unEMT m
+  case v of
+    Right x -> return x
+    Left  e -> return (Left ([], CheckedException e))
+
 -- | Catch and exception and observe the stack trace.
 --   If on top of the IO monad, this will also capture asynchronous exceptions
 catchWithSrcLoc :: (Exception e, MonadBaseControl IO m) => EMT (Caught e l) m a -> (CallTrace -> e -> EMT l m a) -> EMT l m a
 catchWithSrcLoc emt h = EMT $ do
-                v <- CE.try $ unEMT emt
+                v <- unwrap emt
                 case v of
-                  Right(Right x) -> return (Right x)
-                  Right(Left (trace, CheckedException e)) -> handle e trace
-                  Left e -> handle e ["asynchronous exception"]
+                  Right x -> return (Right x)
+                  Left (trace, CheckedException e) -> handle e trace
        where handle e trace =
                       case fromException e of
                                Nothing -> return (Left (trace,CheckedException e))
@@ -207,12 +212,11 @@ finally m sequel = do { v <- m `onException` sequel; _ <- sequel; return v}
 -- | Like finally, but performs the second computation only when the first one
 --   rises an exception
 onException :: MonadBaseControl IO m => EMT l m a -> EMT l m b -> EMT l m a
-onException (EMT m) (EMT sequel) = EMT $ do
-                                     ev <- CE.try m
-                                     case ev of
-                                       Right v@Left{}  -> do { _ <- sequel; return v}
-                                       Left e          -> do { _ <- sequel; return $ Left (["asynchronous exception"], CheckedException e)}
-                                       Right v@Right{} -> return v
+onException m sequel = EMT $ do
+                         ev <- unwrap m
+                         case ev of
+                           Left{}  -> do { _ <- unEMT sequel; return ev}
+                           Right{} -> return ev
 
 bracket :: MonadBaseControl IO m =>
                    EMT l m a        -- ^ acquire resource
