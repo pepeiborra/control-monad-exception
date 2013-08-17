@@ -58,10 +58,10 @@ module Control.Monad.Exception.Pure (
 -- $errors
 
 -- * The EM monad
-    EM,  tryEM, runEM, runEMParanoid,
+    EM,  tryEM, tryEMWithLoc, runEM, runEMParanoid,
 
 -- * The EMT monad transformer
-    EMT(..), CallTrace, tryEMT, runEMT, runEMTParanoid, AnyException, UncaughtException,
+    EMT(..), CallTrace, tryEMT, tryEMTWithLoc, runEMT, runEMTParanoid, AnyException, UncaughtException,
 
 -- ** The Throws type class
    Throws, Caught,
@@ -80,7 +80,6 @@ module Control.Monad.Exception.Pure (
     Try(..), NothingException(..),
     WrapFailure(..),
 #endif
-    MonadLoc(..), withLocTH
 ) where
 
 import Control.Monad.Exception.Base
