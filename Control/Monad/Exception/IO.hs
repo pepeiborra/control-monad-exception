@@ -90,6 +90,7 @@ import Control.Failure
 import Control.Monad.Trans.Control
 import Data.Typeable
 import Control.Exception.Lifted as CE (try)
+import Prelude hiding (catch)
 
 {- $hierarchies
  If your sets of exceptions are hierarchical then you need to

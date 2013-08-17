@@ -88,6 +88,7 @@ import Control.Monad.Exception.Catch (MonadCatch, Exception, SomeException, from
 import qualified Control.Monad.Exception.Catch
 import Control.Failure
 import Data.Typeable
+import Prelude hiding (catch)
 
 {- $hierarchies
  If your sets of exceptions are hierarchical then you need to
