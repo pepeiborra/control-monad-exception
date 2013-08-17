@@ -87,8 +87,6 @@ import Control.Monad.Exception.Throws
 import Control.Monad.Exception.Catch (Exception, SomeException, fromException, MonadCatch)
 import qualified Control.Monad.Exception.Catch
 import Control.Failure
-import Control.Monad.Loc
-import Control.Monad.Loc.TH
 import Control.Monad.Trans.Control
 import Data.Typeable
 import Control.Exception.Lifted as CE (try)
@@ -178,6 +176,7 @@ missing a type annotation to pin down the type of the exception.
 catch :: (Exception e, MonadBaseControl IO m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
 catch emt h = catchWithSrcLoc emt (const h)
 
+unwrap :: MonadBaseControl IO m => EMT l m a -> m (Either (CallTrace, CheckedException l) a)
 unwrap m = do
   v <- CE.try $ unEMT m
   case v of

@@ -46,11 +46,11 @@ instance Exception e => Throws e AnyException
 
 -- | Run a safe computation
 runEMT :: Monad m => EMT NoExceptions m a -> m a
-runEMT = runEMT_gen
+runEMT = runEMTGen
 
 -- | Run a safe computation checking even unchecked ('UncaughtException') exceptions
 runEMTParanoid :: Monad m => EMT ParanoidMode m a -> m a
-runEMTParanoid = runEMT_gen
+runEMTParanoid = runEMTGen
 
 instance Monad m => Functor (EMT l m) where
   fmap f emt = EMT $ do
