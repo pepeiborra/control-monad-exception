@@ -174,7 +174,7 @@ missing a type annotation to pin down the type of the exception.
 
 -- | The catch primitive
 catch :: (Exception e, Monad m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
-catch emt h = catchWithSrcLoc emt (\_ -> h)
+catch emt h = catchWithSrcLoc emt (const h)
 
 -- | Catch and exception and observe the stack trace.
 --   If on top of the IO monad, this will also capture asynchronous exceptions
@@ -214,7 +214,7 @@ bracket :: Monad m => EMT l m a        -- ^ acquire resource
                    -> (a -> EMT l m b) -- ^ release resource
                    -> (a -> EMT l m c) -- ^ computation
                    -> EMT l m c
-bracket acquire release run = do { k <- acquire; run k `finally` (release k) }
+bracket acquire release run = do { k <- acquire; run k `finally` release k }
 
 
 -- | Capture an exception e, wrap it, and rethrow.

@@ -176,7 +176,7 @@ missing a type annotation to pin down the type of the exception.
 
 -- | The catch primitive
 catch :: (Exception e, MonadBaseControl IO m) => EMT (Caught e l) m a -> (e -> EMT l m a) -> EMT l m a
-catch emt h = catchWithSrcLoc emt (\_ -> h)
+catch emt h = catchWithSrcLoc emt (const h)
 
 unwrap m = do
   v <- CE.try $ unEMT m
@@ -222,7 +222,7 @@ bracket :: MonadBaseControl IO m =>
                    -> (a -> EMT l m b) -- ^ release resource
                    -> (a -> EMT l m c) -- ^ computation
                    -> EMT l m c
-bracket acquire release run = do { k <- acquire; run k `finally` (release k) }
+bracket acquire release run = do { k <- acquire; run k `finally` release k }
 
 
 -- | Capture an exception e, wrap it, and rethrow.

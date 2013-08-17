@@ -8,6 +8,7 @@
 module Control.Monad.Exception.Base where
 
 import Control.Applicative
+import Control.Arrow
 import Control.Monad.Base
 import Control.Monad.Exception.Catch
 import Control.Monad.Loc
@@ -29,10 +30,10 @@ tryEMT :: Monad m => EMT AnyException m a -> m (Either SomeException a)
 tryEMT (EMT m) = mapLeft (checkedException.snd) `liftM` m
 
 tryEMTWithLoc :: Monad m => EMT AnyException m a -> m (Either (CallTrace, SomeException) a)
-tryEMTWithLoc = liftM (mapLeft (\(l,ce) -> (l, checkedException ce))) . unEMT
+tryEMTWithLoc = liftM (mapLeft (second checkedException)) . unEMT
 
-runEMT_gen :: forall l m a . Monad m => EMT l m a -> m a
-runEMT_gen (EMT m) = m >>= \x ->
+runEMTGen :: forall l m a . Monad m => EMT l m a -> m a
+runEMTGen (EMT m) = m >>= \x ->
                      case x of
                        Right x -> return x
                        Left (loc,e) -> error (showExceptionWithTrace loc (checkedException e))
