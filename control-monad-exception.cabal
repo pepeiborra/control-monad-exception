@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.11
+version: 0.11.1
 Cabal-Version:  >= 1.10
 build-type: Simple
 license: PublicDomain
@@ -61,29 +61,15 @@ description:
   >       g, Main(example.hs): (2,6)
   >       main, Main(example.hs): (5,9)
   >       main, Main(example.hs): (4,16)
-  .
-  /Changes/:
-  .
-  .  
-     * 0.9.0 - Moved to transformers (finally leaving the whole mtl-transformers cisma behind)
-  .  
-     * 0.10.0 - removed the dependency on safe-failure
-  .  
-     * 0.10.1 - compatibility with failure 0.2 (thanks to Bas van Dijk)
-  .  
-     * 0.10.2 - use the identity type from mtl (thanks to Bas), require minimum cabal-install version (thanks to Bernhard Urban)
-  .
-     * 0.10.3 - Moved the MonadIO instance to the main package
-  .
-     * 0.10.3.1 - Compatibility with base 4.6
-  .
-     * 0.11 - Experimental support for asynchronous exceptions (via monad-control)
 
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads, Failure
 stability: provisional
 tested-with: GHC == 6.12.1
 bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
+
+extra-source-files:
+  changelog
 
 Flag extensibleExceptions
   description: Use extensible-exception package

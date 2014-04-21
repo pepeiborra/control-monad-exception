@@ -74,7 +74,7 @@ module Control.Monad.Exception.IO (
     FailException(..), MonadZeroException(..), mplusDefault,
 
 -- * Reexports
-    Exception(..), SomeException(..), Typeable(..),
+    Exception(..), SomeException(..), Typeable,
     Failure(..),
 #if !MIN_VERSION_failure(0,2,0)
     Try(..), NothingException(..),
@@ -90,7 +90,6 @@ import Control.Failure
 import Control.Monad.Trans.Control
 import Data.Typeable
 import Control.Exception.Lifted as CE (try)
-import Prelude hiding (catch)
 
 {- $hierarchies
  If your sets of exceptions are hierarchical then you need to

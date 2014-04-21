@@ -170,6 +170,9 @@ instance (Throws MonadZeroException l) => MonadPlus (EM l) where
   mzero = throw MonadZeroException
   mplus = mplusDefault
 
+instance (Throws MonadZeroException l) => Alternative (EM l) where
+  (<|>) = mplus
+  empty = mzero
 -- -----------
 -- Exceptions
 -- -----------
