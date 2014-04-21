@@ -24,6 +24,6 @@ Example:
   
   GHCi infers the following types
   
- $> eval :: (Throws DivideByZero l, Throws SumOverflow l) => Expr -> EM l Double
- $> eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
+> $> eval :: (Throws DivideByZero l, Throws SumOverflow l) => Expr -> EM l Double
+> $> eval `catch` \ (e::DivideByZero) -> return (-1)  :: Throws SumOverflow l => Expr -> EM l Double
 

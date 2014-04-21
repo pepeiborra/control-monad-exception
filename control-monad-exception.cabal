@@ -38,7 +38,7 @@ description:
   > runEM(eval `catch` \ (e::SomeException) -> return (-1))  :: Expr -> Double
   .
   .
-  In addition to explicitly typed exceptions his package provides:
+  In addition to explicitly typed exceptions this package provides:
   .
     * Support for explicitly documented, unchecked exceptions (via 'Control.Monad.Exception.tryEMT').
   .
