@@ -1,7 +1,7 @@
 {-# LANGUAGE CPP #-}
 
 {-|
-A Monad Transformer for explicitly typed checked exceptions, described in detail by:
+A monad transformer for explicitly typed checked exceptions with support for asynchronous exception handling. Explicit exceptions are supported by the ideas described in:
 
   * Jose Iborra, \"Explicitly Typed Exceptions for Haskell\",
     PADL'10, January 2010, <http://dl.dropbox.com/s/lgm12trtl0swtra/PADL10.pdf?dl=1>
@@ -9,9 +9,7 @@ A Monad Transformer for explicitly typed checked exceptions, described in detail
 The exceptions thrown by a computation are inferred by the typechecker
 and appear in the type signature of the computation as 'Throws' constraints.
 
-Exceptions are defined using the extensible exceptions framework of Marlow (documented in "Control.Exception"):
-
- * /An Extensible Dynamically-Typed Hierarchy of Exceptions/, by Simon Marlow, in /Haskell '06/.
+Support for asynchronous exceptions is provided by the monad-control package.
 
   /Example/
 
@@ -92,7 +90,7 @@ import Data.Typeable
 import Control.Exception.Lifted as CE (try)
 
 {- $hierarchies
- If your sets of exceptions are hierarchical then you need to
+ If exceptions are hierarchical then you need to
    teach 'Throws' about the hierarchy. See the documentation of
    'Throws' for more info.
 -}

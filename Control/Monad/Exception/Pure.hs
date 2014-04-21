@@ -90,7 +90,7 @@ import Control.Failure
 import Data.Typeable
 
 {- $hierarchies
- If your sets of exceptions are hierarchical then you need to
+ If your exceptions are hierarchical then you need to
    teach 'Throws' about the hierarchy. See the documentation of
    'Throws' for more info.
 -}
