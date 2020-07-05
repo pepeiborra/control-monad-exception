@@ -74,7 +74,10 @@ module Control.Monad.Exception.Pure (
     FailException(..), MonadZeroException(..), mplusDefault,
 
 -- * Reexports
-    Exception(..), SomeException(..), Typeable1,
+    Exception(..), SomeException(..),
+#if !MIN_VERSION_base(4,7,0)
+    Typeable1,
+#endif
     Failure(..),
 #if !MIN_VERSION_failure(0,2,0)
     Try(..), NothingException(..),
