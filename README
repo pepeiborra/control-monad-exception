@@ -1,3 +1,4 @@
+[![GitHub CI](https://github.com/pepeiborra/control-monad-exception/workflows/CI/badge.svg)](https://github.com/pepeiborra/control-monad-exception/actions)
 control-monad-exception: explicitly Typed exceptions as a library
 
 
