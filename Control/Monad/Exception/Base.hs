@@ -12,7 +12,7 @@ import Control.Arrow
 import Control.Monad
 import Control.Monad.Base
 import Control.Monad.Exception.Catch
-#if MIN_VERSION_base(4,9,0) && !MIN_VERSION_base(4,11,0)
+#if MIN_VERSION_base(4,9,0) && !MIN_VERSION_base(4,13,0)
 import qualified Control.Monad.Fail as Fail
 #endif
 import Control.Monad.Loc
@@ -72,7 +72,7 @@ instance Monad m => Monad (EMT l m) where
                   Left e  -> return (Left e)
                   Right x -> unEMT (f x)
 
-#if !MIN_VERSION_base(4,11,0)
+#if !MIN_VERSION_base(4,13,0)
 #if MIN_VERSION_base(4,9,0):
   fail = Fail.fail
 #else
@@ -85,7 +85,11 @@ instance Monad m => Applicative (EMT l m) where
   (<*>) = ap
 
 #if MIN_VERSION_base(4,9,0)
+#if MIN_VERSION_base(4,13,0)
 instance Monad m => MonadFail (EMT l m) where
+#else
+instance Monad m => Fail.MonadFail (EMT l m) where
+#endif
   fail s = EMT $ return $ Left ([], CheckedException $ toException $ FailException s)
 #endif
 
