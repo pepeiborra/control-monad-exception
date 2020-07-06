@@ -9,8 +9,12 @@ module Control.Monad.Exception.Base where
 
 import Control.Applicative
 import Control.Arrow
+import Control.Monad
 import Control.Monad.Base
 import Control.Monad.Exception.Catch
+#if MIN_VERSION_base(4,9,0) && !MIN_VERSION_base(4,13,0)
+import qualified Control.Monad.Fail as Fail
+#endif
 import Control.Monad.Loc
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.Control
@@ -62,17 +66,32 @@ instance Monad m => Functor (EMT l m) where
 instance Monad m => Monad (EMT l m) where
   return = EMT . return . Right
 
-  fail s = EMT $ return $ Left ([], CheckedException $ toException $ FailException s)
-
   emt >>= f = EMT $ do
                 v <- unEMT emt
                 case v of
                   Left e  -> return (Left e)
                   Right x -> unEMT (f x)
 
+#if !MIN_VERSION_base(4,13,0)
+#if MIN_VERSION_base(4,9,0)
+  fail = Fail.fail
+#else
+  fail s = EMT $ return $ Left ([], CheckedException $ toException $ FailException s)
+#endif
+#endif
+
 instance Monad m => Applicative (EMT l m) where
   pure  = return
   (<*>) = ap
+
+#if MIN_VERSION_base(4,9,0)
+#if MIN_VERSION_base(4,13,0)
+instance Monad m => MonadFail (EMT l m) where
+#else
+instance Monad m => Fail.MonadFail (EMT l m) where
+#endif
+  fail s = EMT $ return $ Left ([], CheckedException $ toException $ FailException s)
+#endif
 
 instance (Exception e, Throws e l, Monad m) => Failure e (EMT l m) where
   failure = throw
@@ -96,14 +115,28 @@ instance MonadBase b m => MonadBase b (EMT l m) where
     liftBase = liftBaseDefault
 
 instance MonadBaseControl b m => MonadBaseControl b (EMT l m) where
+#if MIN_VERSION_monad_control(1,0,0)
+     type StM (EMT l m) a = ComposeSt (EMT l) m a
+     liftBaseWith = defaultLiftBaseWith
+     restoreM     = defaultRestoreM
+#else
      newtype StM (EMT l m) a = StmEMT {unStmEMT :: ComposeSt (EMT l) m a}
      liftBaseWith = defaultLiftBaseWith StmEMT
      restoreM     = defaultRestoreM   unStmEMT
+#endif
+
+-- newtype EMT l m a = EMT {unEMT :: m (Either (CallTrace, CheckedException l) a)}
 
 instance MonadTransControl (EMT l) where
+#if MIN_VERSION_monad_control(1,0,0)
+     type StT (EMT l) a = Either (CallTrace, CheckedException l) a
+     liftWith f = EMT $ fmap return $ f $ unEMT
+     restoreT   = EMT
+#else
      newtype StT (EMT l) a = StEMT {unStEMT :: Either (CallTrace, CheckedException l) a}
      liftWith f = EMT $ liftM return $ f $ liftM StEMT . unEMT
-     restoreT       = EMT . liftM unStEMT
+     restoreT   = EMT . liftM unStEMT
+#endif
 
 instance Monad m => MonadLoc (EMT l m) where
     withLoc loc (EMT emt) = EMT $ do
