@@ -73,7 +73,7 @@ instance Monad m => Monad (EMT l m) where
                   Right x -> unEMT (f x)
 
 #if !MIN_VERSION_base(4,13,0)
-#if MIN_VERSION_base(4,9,0):
+#if MIN_VERSION_base(4,9,0)
   fail = Fail.fail
 #else
   fail s = EMT $ return $ Left ([], CheckedException $ toException $ FailException s)
