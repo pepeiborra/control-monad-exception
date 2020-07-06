@@ -1,5 +1,5 @@
 name: control-monad-exception
-version: 0.11.1
+version: 0.11.4
 Cabal-Version:  >= 1.10
 build-type: Simple
 license: PublicDomain
@@ -65,7 +65,7 @@ description:
 synopsis: Explicitly typed, checked exceptions with stack traces
 category: Control, Monads, Failure
 stability: provisional
-tested-with: GHC == 6.12.1
+tested-with: GHC == 8.6.5, GHC == 8.8.3, GHC == 8.10.1
 bug-reports: http://github.com/pepeiborra/control-monad-exception/issues
 
 extra-source-files:

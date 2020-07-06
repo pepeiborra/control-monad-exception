@@ -6,3 +6,4 @@
      * 0.10.3.1 - Compatibility with base 4.6
      * 0.11 - Experimental support for asynchronous exceptions (via monad-control)
      * 0.11.1 - Add missing Alternative instances
+     * 0.11.4 (Jul 6 2020) - Compatibility with recent monad-control and base packages (contributed by Tao He)
