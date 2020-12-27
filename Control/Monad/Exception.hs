@@ -3,7 +3,7 @@
 A Monad Transformer for explicitly typed checked exceptions, described in detail by:
 
   * Jose Iborra, \"Explicitly Typed Exceptions for Haskell\",
-    PADL'10, January 2010, <http://dl.dropbox.com/s/lgm12trtl0swtra/PADL10.pdf?dl=1>
+    PADL'10, January 2010, <https://www.scribd.com/document/25467100/Explicitly-Typed-Exceptions-for-Haskell-PADL-10>
 
 "Control.Monad.Exception.Pure" provides the classic, Either based monad,
 whereas "Control.Monad.Exception.IO" provides a more advanced IO based monad with
