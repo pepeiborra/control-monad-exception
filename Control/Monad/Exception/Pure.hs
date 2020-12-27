@@ -4,7 +4,7 @@
 A Monad Transformer for explicitly typed checked exceptions, described in detail by:
 
   * Jose Iborra, \"Explicitly Typed Exceptions for Haskell\",
-    PADL'10, January 2010, <http://dl.dropbox.com/s/lgm12trtl0swtra/PADL10.pdf?dl=1>
+    PADL'10, January 2010, <https://www.scribd.com/document/25467100/Explicitly-Typed-Exceptions-for-Haskell-PADL-10>
 
 The exceptions thrown by a computation are inferred by the typechecker
 and appear in the type signature of the computation as 'Throws' constraints.
